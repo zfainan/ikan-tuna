@@ -19,7 +19,7 @@ use App\Http\Controllers\SupplierController;
 use App\Models\Cutting;
 use App\Models\CuttingL;
 use App\Models\ServiceL;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -117,7 +117,7 @@ Route::get('/get-grade/{ikan}', function (Kategori_produk $ikan) {
     return response()->json(['grade' => $ikan->grade]);
 });
 
-Route::get('/get-supplier/{penerimaan_ikan}', function (Penerimaan_ikan $penerimaan_ikan) {
+Route::get('/get-supplier/{penerimaan_ikan}', function (PenerimaanIkan $penerimaan_ikan) {
     return response()->json(['nama_supplier' => $penerimaan_ikan->supplier->nama_supplier]);
 });
 

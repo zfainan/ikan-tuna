@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cutting;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,7 +20,7 @@ class CuttingController extends Controller// Mengubah nama controller menjadi Cu
     public function index()
     {
         $cutting = Cutting::all();
-        $penerimaan_ikan = Penerimaan_ikan::all();
+        $penerimaan_ikan = PenerimaanIkan::all();
         $suppliers = Supplier::all();
         $selectedSupplier = null;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\livewire;
+namespace App\Livewire;
 
 use App\Models\CuttingL;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\GradeL;
 use App\Models\GradeService;
 use App\Models\GradeHservice;
@@ -57,7 +57,7 @@ class CuttingByL extends Component
 // inisialisasi data
     public function mount()
     {
-        $this->penerimaan_ikan = Penerimaan_ikan::with(['supplier' => function ($query) {
+        $this->penerimaan_ikan = PenerimaanIkan::with(['supplier' => function ($query) {
             $query->select('supplier_id', 'nama_supplier', 'alamat');
         }])
             ->select('penerimaan_ikans.*')
@@ -107,7 +107,7 @@ class CuttingByL extends Component
     public function updatedPenerimaanId($value) 
     {
         if ($value) {
-            $penerimaan = Penerimaan_ikan::find($value);
+            $penerimaan = PenerimaanIkan::find($value);
             if ($penerimaan) {
                 $this->selectedPenerimaan = $penerimaan;
                 $this->no_ikan = $penerimaan->no_ikan;

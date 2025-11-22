@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\Grade;
 use Carbon\Carbon;
 
@@ -38,7 +38,7 @@ class GradingProses extends Component
     // Get filtered fish receptions
     public function getPenerimaanIkanProperty()
     {
-        $query = Penerimaan_ikan::with(['supplier', 'grade', 'kategori_berat_penerimaan'])
+        $query = PenerimaanIkan::with(['supplier', 'grade', 'kategori_berat_penerimaan'])
             ->whereDate('tgl_penerimaan', $this->tanggalPenerimaan);
 
         if ($this->tanggalBongkar) {
@@ -66,7 +66,7 @@ class GradingProses extends Component
     public function openGradingModal($penerimaanId)
     {
         $this->penerimaanId = $penerimaanId;
-        $penerimaan = Penerimaan_ikan::find($penerimaanId);
+        $penerimaan = PenerimaanIkan::find($penerimaanId);
         $this->gradeId = $penerimaan->grade_id;
         $this->showGradingModal = true;
     }
@@ -79,7 +79,7 @@ class GradingProses extends Component
             'keterangan' => 'nullable|string|max:255',
         ]);
 
-        $penerimaan = Penerimaan_ikan::find($this->penerimaanId);
+        $penerimaan = PenerimaanIkan::find($this->penerimaanId);
         $penerimaan->grade_id = $this->gradeId;
         $penerimaan->save();
 
@@ -98,7 +98,7 @@ class GradingProses extends Component
             return;
         }
 
-        Penerimaan_ikan::whereIn('penerimaan_id', $this->selectedPenerimaan)
+        PenerimaanIkan::whereIn('penerimaan_id', $this->selectedPenerimaan)
             ->update(['grade_id' => $this->selectedGrade]);
 
         $this->reset(['selectedPenerimaan', 'selectedGrade']);

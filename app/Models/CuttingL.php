@@ -40,7 +40,7 @@ class CuttingL extends Model
 
     public function penerimaan()
     {
-        return $this->belongsTo(Penerimaan_ikan::class, 'penerimaan_id');
+        return $this->belongsTo(PenerimaanIkan::class, 'penerimaan_id');
     }
 
     public function grade_service()

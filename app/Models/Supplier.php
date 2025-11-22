@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 
 class Supplier extends Model
 {
@@ -23,7 +23,7 @@ class Supplier extends Model
 
     public function penerimaan_ikan()
     {
-        return $this->hasMany(Penerimaan_ikan::class, 'supplier_id', 'supplier_id')
+        return $this->hasMany(PenerimaanIkan::class, 'supplier_id', 'supplier_id')
         ->withTrashed();
     }
 

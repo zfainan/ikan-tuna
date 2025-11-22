@@ -50,12 +50,12 @@ class Cutting extends Model
 
     public function penerimaan()
     {
-        return $this->belongsTo(Penerimaan_ikan::class, 'penerimaan_id');
+        return $this->belongsTo(PenerimaanIkan::class, 'penerimaan_id');
     }
 
     public function penerimaan_ikan()
     {
-        return $this->belongsTo(Penerimaan_ikan::class, 'penerimaan_id');
+        return $this->belongsTo(PenerimaanIkan::class, 'penerimaan_id');
     }
     
     public function kategori_byproduk()

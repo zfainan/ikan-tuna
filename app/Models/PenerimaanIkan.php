@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Penerimaan_Ikan extends Model
+class PenerimaanIkan extends Model
 {
     use HasFactory;
 

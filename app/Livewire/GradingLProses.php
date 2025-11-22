@@ -1,6 +1,6 @@
 <?php
 
-namespace App\livewire;
+namespace App\Livewire;
 
 class GradingLProses extends Component
 {

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ServiceL;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\Supplier;
 use App\Models\Kategori_produk;
 use Carbon\Carbon;

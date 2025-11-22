@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\ServiceL;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\Supplier;
 use App\Models\KategoriProduk;
 use App\Models\CuttingL;
@@ -31,7 +31,7 @@ class ServiceByL extends Component
 // inisialisasi data
     public function mount()
     {
-        $this->filteredPenerimaan = Penerimaan_ikan::all();
+        $this->filteredPenerimaan = PenerimaanIkan::all();
         $this->session_tgl_service = Carbon::now()->format('Y-m-d');
         $this->loadCuttingData();
         $this->addRow();

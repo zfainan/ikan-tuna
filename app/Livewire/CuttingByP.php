@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Cutting;
-use App\Models\Penerimaan_ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\Supplier;
 use App\Models\KategoriByprodukCt;
 use Livewire\Component;
@@ -53,7 +53,7 @@ class CuttingByP extends Component
     {
         // Inisialisasi variabel yang diperlukan
         $this->kategori_byproduk_ct = KategoriByprodukCt::all();
-        $this->penerimaan_ikan = Penerimaan_ikan::with('supplier')
+        $this->penerimaan_ikan = PenerimaanIkan::with('supplier')
             ->orderBy('tgl_penerimaan', 'desc')
             ->get();
             
@@ -194,7 +194,7 @@ class CuttingByP extends Component
     // memuat data- data yang ada pada penerimaan ikan
     public function loadPenerimaanIkan()
     {
-        $this->penerimaan_ikan = Penerimaan_ikan::with('supplier')
+        $this->penerimaan_ikan = PenerimaanIkan::with('supplier')
             ->orderBy('tgl_penerimaan', 'desc')
             ->get();
         return $this->penerimaan_ikan;
@@ -203,7 +203,7 @@ class CuttingByP extends Component
     public function updateSelectedTanggalPenerimaan($value)
     {
         if($value) {
-            $this->filteredPenerimaan = Penerimaan_ikan::where('penerimaan_id', $value)
+            $this->filteredPenerimaan = PenerimaanIkan::where('penerimaan_id', $value)
                 ->with('supplier')
                 ->get();
         } else {
@@ -532,7 +532,7 @@ class CuttingByP extends Component
 
         // Filter berdasarkan tanggal penerimaan
         if ($this->selectedTanggalPenerimaan) {
-            $penerimaanIds = Penerimaan_ikan::where('penerimaan_id', $this->selectedTanggalPenerimaan)
+            $penerimaanIds = PenerimaanIkan::where('penerimaan_id', $this->selectedTanggalPenerimaan)
                 ->pluck('penerimaan_id');
             $query->whereIn('penerimaan_id', $penerimaanIds);
         }

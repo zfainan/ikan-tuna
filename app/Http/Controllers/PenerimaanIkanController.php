@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kategori_produk;
-use App\Models\Penerimaan_Ikan;
+use App\Models\PenerimaanIkan;
 use App\Models\Supplier;
 use App\Models\Grade;
 use App\Models\KategoriBeratPenerimaan;
@@ -18,8 +18,8 @@ class PenerimaanIkanController extends Controller
     public function index()
     {
         
-        $data = Penerimaan_Ikan::all();
-        $totaldata = Penerimaan_Ikan::count();
+        $data = PenerimaanIkan::all();
+        $totaldata = PenerimaanIkan::count();
         $suppliers = Supplier::all();
         $grades = Grade::all();
         $kategori_berat_penerimaans = KategoriBeratPenerimaan::all();
@@ -96,7 +96,7 @@ class PenerimaanIkanController extends Controller
                 return redirect()->back()->withErrors(['berat_ikan' => 'Kategori berat tidak dapat ditentukan untuk berat ikan ini.'])->withInput();
             }
 
-            Penerimaan_Ikan::create([
+            PenerimaanIkan::create([
                 'tgl_penerimaan' => $validated['tgl_penerimaan'],                           // Tabel Penerimaan Ikan
                 'berat_ikan' => $validated['berat_ikan'],
                 'supplier_id' => $validated['supplier_id'],                                  // Tabel supplier

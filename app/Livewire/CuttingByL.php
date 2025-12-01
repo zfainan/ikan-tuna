@@ -6,7 +6,7 @@ use App\Models\CuttingL;
 use App\Models\PenerimaanIkan;
 use App\Models\GradeL;
 use App\Models\GradeService;
-use App\Models\GradeHservice;
+use App\Models\GradeHService;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
@@ -77,7 +77,7 @@ class CuttingByL extends Component
         $this->selectedSizingLoin = [1 => null];
         $this->gradingService = \App\Models\GradeService::all();
         $this->selectedGradingService = [1 => null, 2 => null, 3 => null];
-        $this->gradingHservice = \App\Models\GradeHservice::all();
+        $this->gradingHservice = \App\Models\GradeHService::all();
         $this->selectedGradingHservice = [1 => null, 2 => null, 3 => null];
 
         //Inisialisasi filter tanggal
@@ -161,6 +161,9 @@ class CuttingByL extends Component
 //hapus row
     public function removeRow($index)
     {
+        info($this->rows);
+        return;
+        
         try {
             $row = $this->rows[$index] ?? null;
             if (isset($row['cutting_id'])) {

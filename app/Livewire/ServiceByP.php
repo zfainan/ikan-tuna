@@ -2,20 +2,19 @@
 
 namespace App\Livewire;
 
-use App\Models\Cutting;
 use App\Models\PenerimaanIkan;
-use App\Models\Supplier;
 use App\Models\KategoriByprodukCt;
+use App\Models\Service;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class CuttingByP extends Component
+class ServiceByP extends Component
 {
 
     // Properti untuk form input dan filter
-    public $cuttings = [];                      //tabel cutting
-    public $session_tgl_cutting;
+    public $services = [];
+    public $session_tgl_service;
     public $session_tgl_injek_co;
     public $total_berat = [];
     public $total_pcs = [];
@@ -37,11 +36,11 @@ class CuttingByP extends Component
     ];
     public $rows = [];
     public $data = [];
-    public $groupedCuttings = [];
+    public $groupedServices = [];
 
     // Property untuk filter
-    public $filter_tgl_cutting_from;
-    public $filter_tgl_cutting_to;
+    public $filter_tgl_service_from;
+    public $filter_tgl_service_to;
     public $filter_tgl_injek_co_from;
     public $filter_tgl_injek_co_to;
     public $filter_tgl_penerimaan_from;
@@ -49,8 +48,8 @@ class CuttingByP extends Component
     public $filter_jenis_penerimaan;
 
     // Properties for editing
-    public $cutting_id;
-    public $edit_tgl_cutting;
+    public $service_id;
+    public $edit_tgl_service;
     public $edit_tgl_injek_co;
 
     // Insialisasi data
@@ -77,8 +76,8 @@ class CuttingByP extends Component
         $this->addRow();
 
         // Inisialisasi session jika ada di URL
-        if (request()->has('tgl_cutting')) {
-            $this->session_tgl_cutting = request('tgl_cutting');
+        if (request()->has('tgl_service')) {
+            $this->session_tgl_service = request('tgl_service');
         }
         if (request()->has('tgl_injek_co')) {
             $this->session_tgl_injek_co = request('tgl_injek_co');
@@ -89,7 +88,7 @@ class CuttingByP extends Component
         }
 
         // Load data jika semua filter terisi
-        if ($this->session_tgl_cutting && $this->session_tgl_injek_co && $this->penerimaan_id) {
+        if ($this->session_tgl_service && $this->session_tgl_injek_co && $this->penerimaan_id) {
             $this->loadData();
         } else {
             $this->reset(['rows']);
@@ -104,15 +103,15 @@ class CuttingByP extends Component
             $this->rows = [];
 
             // Ambil data dari database
-            $query = Cutting::with(['kategori_byproduk', 'penerimaan']);
+            $query = Service::with(['kategori_byproduk', 'penerimaan']);
 
             // Filter berdasarkan form input
             if ($this->penerimaan_id) {
                 $query->where('penerimaan_id', $this->penerimaan_id);
             }
 
-            if ($this->session_tgl_cutting) {
-                $query->where('tgl_cutting', $this->session_tgl_cutting);
+            if ($this->session_tgl_service) {
+                $query->where('tgl_service', $this->session_tgl_service);
             }
 
             if ($this->session_tgl_injek_co) {
@@ -120,33 +119,33 @@ class CuttingByP extends Component
             }
 
             // Ambil data dan urutkan berdasarkan no_batch dan kategori
-            $cuttings = $query->orderBy('no_batch')
+            $services = $query->orderBy('no_batch')
                 ->orderBy('kategori_byproduk_id')
                 ->get();
 
             // Kelompokkan data berdasarkan no_batch
             $groupedData = [];
 
-            foreach ($cuttings as $cutting) {
-                $noBatch = $cutting->no_batch;
+            foreach ($services as $service) {
+                $noBatch = $service->no_batch;
 
                 if (!isset($groupedData[$noBatch])) {
                     $groupedData[$noBatch] = [
                         'no_batch' => $noBatch,
-                        'tgl_cutting' => $cutting->tgl_cutting,
-                        'tgl_injek_co' => $cutting->tgl_injek_co,
+                        'tgl_service' => $service->tgl_service,
+                        'tgl_injek_co' => $service->tgl_injek_co,
                         'produk' => []
                     ];
                 }
 
                 // Pastikan nilai berat dan total adalah single value, bukan array
-                $berat = is_array($cutting->berat_produk) ? $cutting->berat_produk[0] : $cutting->berat_produk;
-                $total = is_array($cutting->total_produk) ? $cutting->total_produk[0] : $cutting->total_produk;
+                $berat = is_array($service->berat_produk) ? $service->berat_produk[0] : $service->berat_produk;
+                $total = is_array($service->total_produk) ? $service->total_produk[0] : $service->total_produk;
 
                 // Tambahkan data produk
                 $groupedData[$noBatch]['produk'][] = [
-                    'kategori_id' => $cutting->kategori_byproduk_id,
-                    'nama' => $cutting->kategori_byproduk->nama_produk ?? 'Produk Tidak Diketahui',
+                    'kategori_id' => $service->kategori_byproduk_id,
+                    'nama' => $service->kategori_byproduk->nama_produk ?? 'Produk Tidak Diketahui',
                     'berat' => (float) $berat,
                     'total' => (int) $total
                 ];
@@ -158,7 +157,7 @@ class CuttingByP extends Component
             foreach ($groupedData as $batch) {
                 $row = [
                     'no_batch' => $batch['no_batch'],
-                    'tgl_cutting' => $batch['tgl_cutting'],
+                    'tgl_service' => $batch['tgl_service'],
                     'tgl_injek_co' => $batch['tgl_injek_co']
                 ];
 
@@ -267,7 +266,7 @@ class CuttingByP extends Component
             if (isset($this->rows[$index])) {
                 $no_batch = $this->rows[$index]['no_batch'] ?? null;
                 if ($no_batch) {
-                    $deletRows = Cutting::where('no_batch', $no_batch)->delete();
+                    $deletRows = Service::where('no_batch', $no_batch)->delete();
 
                     if ($deletRows > 0) {
                         unset($this->rows[$index]);
@@ -290,13 +289,13 @@ class CuttingByP extends Component
             // Validasi input
             $this->validate([
                 'penerimaan_id' => 'required',
-                'session_tgl_cutting' => 'required|date',
-                'session_tgl_injek_co' => 'required|date|after_or_equal:session_tgl_cutting',
+                'session_tgl_service' => 'required|date',
+                'session_tgl_injek_co' => 'required|date|after_or_equal:session_tgl_service',
             ], [
                 'penerimaan_id.required' => 'Penerimaan harus dipilih',
-                'session_tgl_cutting.required' => 'Tanggal cutting harus diisi',
+                'session_tgl_service.required' => 'Tanggal service harus diisi',
                 'session_tgl_injek_co.required' => 'Tanggal injek CO harus diisi',
-                'session_tgl_injek_co.after_or_equal' => 'Tanggal injek CO harus setelah atau sama dengan tanggal cutting',
+                'session_tgl_injek_co.after_or_equal' => 'Tanggal injek CO harus setelah atau sama dengan tanggal service',
             ]);
 
             // Validasi minimal satu data terisi
@@ -323,7 +322,7 @@ class CuttingByP extends Component
             DB::beginTransaction();
 
             // Hapus data lama berdasarkan filter yang sama
-            Cutting::where('tgl_cutting', $this->session_tgl_cutting)
+            Service::where('tgl_service', $this->session_tgl_service)
                 ->where('tgl_injek_co', $this->session_tgl_injek_co)
                 ->where('penerimaan_id', $this->penerimaan_id)
                 ->delete();
@@ -347,8 +346,8 @@ class CuttingByP extends Component
                     // Hanya simpan jika ada kategori, no batch, dan minimal satu nilai diisi
                     if (!empty($kategoriId) && !empty($noBatch) && ($berat > 0 || $total > 0)) {
                         try {
-                            Cutting::create([
-                                'tgl_cutting' => $this->session_tgl_cutting,
+                            Service::create([
+                                'tgl_service' => $this->session_tgl_service,
                                 'tgl_injek_co' => $this->session_tgl_injek_co,
                                 'penerimaan_id' => $this->penerimaan_id,
                                 'kategori_byproduk_id' => $kategoriId,
@@ -360,7 +359,7 @@ class CuttingByP extends Component
                             $savedCount++;
                         } catch (\Exception $e) {
                             Log::error('Gagal menyimpan data: ' . $e->getMessage() . ' - Data: ' . json_encode([
-                                'tgl_cutting' => $this->session_tgl_cutting,
+                                'tgl_service' => $this->session_tgl_service,
                                 'tgl_injek_co' => $this->session_tgl_injek_co,
                                 'penerimaan_id' => $this->penerimaan_id,
                                 'kategori_byproduk_id' => $kategoriId,
@@ -386,7 +385,7 @@ class CuttingByP extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error saat menyimpan data cutting: ' . $e->getMessage());
+            Log::error('Error saat menyimpan data service: ' . $e->getMessage());
             session()->flash('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
@@ -407,29 +406,29 @@ class CuttingByP extends Component
         ];
     }
 
-    public function loadCuttingForEdit($id)
+    public function loadServiceForEdit($id)
     {
-        $cutting = Cutting::findOrFail($id);
-        if ($cutting) {
-            $this->edit_tgl_cutting = $cutting->tgl_cutting;
-            $this->edit_tgl_injek_co = $cutting->tgl_injek_co;
-            $this->selectedSupplier = $cutting->supplier_id;
+        $service = Service::findOrFail($id);
+        if ($service) {
+            $this->edit_tgl_service = $service->tgl_service;
+            $this->edit_tgl_injek_co = $service->tgl_injek_co;
+            $this->selectedSupplier = $service->supplier_id;
         }
     }
 
-    public function updateCutting()
+    public function updateService()
     {
         // Validasi input
         $this->validate([
-            'edit_tgl_cutting' => 'required|date',
+            'edit_tgl_service' => 'required|date',
             'edit_tgl_injek_co' => 'required|date',
             'selectedSupplier' => 'required',
         ]);
 
-        // Update data cutting
-        $cutting = Cutting::findOrFail($this->cutting_id);
-        $cutting->update([
-            'tgl_cutting' => $this->edit_tgl_cutting,
+        // Update data service
+        $service = Service::findOrFail($this->service_id);
+        $service->update([
+            'tgl_service' => $this->edit_tgl_service,
             'tgl_injek_co' => $this->edit_tgl_injek_co,
         ]);
 
@@ -437,36 +436,36 @@ class CuttingByP extends Component
         $this->filterData();
 
         // Tampilkan pesan sukses
-        session()->flash('message', 'Cutting data updated successfully.');
+        session()->flash('message', 'Service data updated successfully.');
     }
 
     public function delete($id)
     {
-        Cutting::destroy($id);
+        Service::destroy($id);
         $this->filterData();
     }
 
     // Method untuk mengambil,filter & reset data yang ada
     public function applyFilters()
     {
-        $query = Cutting::query()
-            ->join('penerimaan_ikan', 'cutting.penerimaan_id', '=', 'penerimaan_ikan.penerimaan_id')
-            ->select('cuttings.*');
+        $query = Service::query()
+            ->join('penerimaan_ikan', 'service.penerimaan_id', '=', 'penerimaan_ikan.penerimaan_id')
+            ->select('services.*');
 
-        if ($this->filter_tgl_cutting_from) {
-            $query->whereDate('cuttings.tgl_cutting', '>=', $this->filter_tgl_cutting_from);
+        if ($this->filter_tgl_service_from) {
+            $query->whereDate('services.tgl_service', '>=', $this->filter_tgl_service_from);
         }
 
-        if ($this->filter_tgl_cutting_to) {
-            $query->whereDate('cuttings.tgl_cutting', '<=', $this->filter_tgl_cutting_to);
+        if ($this->filter_tgl_service_to) {
+            $query->whereDate('services.tgl_service', '<=', $this->filter_tgl_service_to);
         }
 
         if ($this->filter_tgl_injek_co_from) {
-            $query->whereDate('cuttings.tgl_injek_co', '>=', $this->filter_tgl_injek_co_from);
+            $query->whereDate('services.tgl_injek_co', '>=', $this->filter_tgl_injek_co_from);
         }
 
         if ($this->filter_tgl_injek_co_to) {
-            $query->whereDate('cuttings.tgl_injek_co', '<=', $this->filter_tgl_injek_co_to);
+            $query->whereDate('services.tgl_injek_co', '<=', $this->filter_tgl_injek_co_to);
         }
 
         if ($this->filter_tgl_penerimaan_from) {
@@ -481,13 +480,13 @@ class CuttingByP extends Component
             $query->where('penerimaan_ikan.jenis_penerimaan', $this->filter_jenis_penerimaan);
         }
 
-        return $query->orderBy('cuttings.created_at', 'desc')->get();
+        return $query->orderBy('services.created_at', 'desc')->get();
     }
 
     public function resetFilters()
     {
-        $this->filter_tgl_cutting_from = now()->format('Y-m-d');
-        $this->filter_tgl_cutting_to = now()->format('Y-m-d');
+        $this->filter_tgl_service_from = now()->format('Y-m-d');
+        $this->filter_tgl_service_to = now()->format('Y-m-d');
         $this->filter_tgl_injek_co_from = now()->format('Y-m-d');
         $this->filter_tgl_injek_co_to = now()->format('Y-m-d');
         $this->filter_tgl_penerimaan_from = now()->format('Y-m-d');
@@ -499,13 +498,13 @@ class CuttingByP extends Component
 
     protected function getFilteredData()
     {
-        $query = Cutting::with(['penerimaan_ikan.supplier']);
+        $query = Service::with(['penerimaan_ikan.supplier']);
 
-        //filter tanggal cutting
-        if ($this->filter_tgl_cutting_from && $this->filter_tgl_cutting_to) {
-            $query->whereBetween('tgl_cutting', [
-                $this->filter_tgl_cutting_from . ' 00:00:00',
-                $this->filter_tgl_cutting_to . ' 23:59:59'
+        //filter tanggal service
+        if ($this->filter_tgl_service_from && $this->filter_tgl_service_to) {
+            $query->whereBetween('tgl_service', [
+                $this->filter_tgl_service_from . ' 00:00:00',
+                $this->filter_tgl_service_to . ' 23:59:59'
             ]);
         }
         //filter tanggal injek co
@@ -527,17 +526,17 @@ class CuttingByP extends Component
             }
         }
 
-        return $query->orderBy('tgl_cutting', 'desc')->get();
+        return $query->orderBy('tgl_service', 'desc')->get();
     }
 
     // Method untuk filter data
     public function filterData()
     {
-        $query = Cutting::with(['penerimaan.supplier', 'kategoriByproduk']);
+        $query = Service::with(['penerimaan.supplier', 'kategoriByproduk']);
 
-        // Filter berdasarkan tanggal cutting
-        if ($this->session_tgl_cutting) {
-            $query->whereDate('tgl_cutting', $this->session_tgl_cutting);
+        // Filter berdasarkan tanggal service
+        if ($this->session_tgl_service) {
+            $query->whereDate('tgl_service', $this->session_tgl_service);
         }
 
         // Filter berdasarkan tanggal injek co
@@ -557,27 +556,27 @@ class CuttingByP extends Component
             $query->where('penerimaan_id', $this->penerimaan_id);
         }
 
-        $this->cuttings = $query->orderBy('created_at', 'desc')->get();
+        $this->services = $query->orderBy('created_at', 'desc')->get();
     }
 
     public function render()
     {
         $this->filterData();
 
-        return view('livewire.cutting', [
-            'cuttings' => $this->rows,
-            'session_tgl_cutting' => $this->session_tgl_cutting,
+        return view('livewire.service', [
+            'services' => $this->rows,
+            'session_tgl_service' => $this->session_tgl_service,
             'session_tgl_injek_co' => $this->session_tgl_injek_co,
             'selectedSupplier' => $this->selectedSupplier,
             'penerimaan_ikan' => $this->penerimaan_ikan,
             'kategori_byproduk' => KategoriByprodukCt::all(),
-            'groupedCuttings' => $this->groupCuttingsByProduct(), // Menambahkan data yang sudah dikelompokkan
+            'groupedServices' => $this->groupServicesByProduct(), // Menambahkan data yang sudah dikelompokkan
             'produkList' => KategoriByprodukCt::all()
         ]);
     }
 
-    // Method baru untuk mengelompokkan data cutting berdasarkan produk
-    protected function groupCuttingsByProduct()
+    // Method baru untuk mengelompokkan data service berdasarkan produk
+    protected function groupServicesByProduct()
     {
         $grouped = [];
 
@@ -590,7 +589,7 @@ class CuttingByP extends Component
             if (!isset($grouped[$noBatch])) {
                 $grouped[$noBatch] = [
                     'no_batch' => $noBatch,
-                    'tgl_cutting' => $row['tgl_cutting'] ?? null, // Gunakan null coalescing operator
+                    'tgl_service' => $row['tgl_service'] ?? null, // Gunakan null coalescing operator
                     'tgl_injek_co' => $row['tgl_injek_co'] ?? null, // Gunakan null coalescing operator
                     'produk' => []
                 ];
@@ -650,7 +649,7 @@ class CuttingByP extends Component
     // Update method updatedPenerimaanId untuk memuat data saat penerimaan_id berubah
     public function updatedPenerimaanId($value)
     {
-        if ($this->session_tgl_cutting && $this->session_tgl_injek_co && $this->penerimaan_id) {
+        if ($this->session_tgl_service && $this->session_tgl_injek_co && $this->penerimaan_id) {
             $this->loadData();
         } else {
             $this->reset(['rows']);
@@ -665,8 +664,8 @@ class CuttingByP extends Component
         $this->addRow();
     }
 
-    // Update method updatedSessionTglCutting untuk reset data jika tanggal berubah
-    public function updatedSessionTglCutting($value)
+    // Update method updatedSessionTglService untuk reset data jika tanggal berubah
+    public function updatedSessionTglService($value)
     {
         $this->reset(['session_tgl_injek_co', 'selectedTanggalPenerimaan', 'penerimaan_id', 'rows']);
         $this->addRow();

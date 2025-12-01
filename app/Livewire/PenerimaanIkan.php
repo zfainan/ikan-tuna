@@ -2,13 +2,17 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Penerimaan_Ikan;
+use App\Models\PenerimaanIkan as PenerimaanIkanModel;
 use App\Models\Supplier;
 use App\Models\Grade;
 use App\Models\KategoriBeratPenerimaan;
 use App\Models\Cutting;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
+/**
+ * @property ?array $combinations
+ */
 class PenerimaanIkan extends Component
 {
     // Properti untuk menyimpan data
@@ -44,7 +48,7 @@ class PenerimaanIkan extends Component
         try {
             $this->rows = [];
             // Gunakan relasi yang benar
-            $query = Penerimaan_Ikan::with(['grade', 'kategoriBeratPenerimaan']);
+            $query = PenerimaanIkanModel::with(['grade', 'kategoriBeratPenerimaan']);
             
             // Hanya filter jika nilai filter tidak null
             if (!empty($this->penerimaan_id)) {
@@ -69,7 +73,7 @@ class PenerimaanIkan extends Component
             }
             
         } catch (\Exception $e) {
-            \Log::error('Error loading data: ' . $e->getMessage());
+            Log::error('Error loading data: ' . $e->getMessage());
             session()->flash('error', 'Gagal memuat data: ' . $e->getMessage());
         }
     }
@@ -90,7 +94,7 @@ class PenerimaanIkan extends Component
         if (isset($this->rows[$index])) {
             if (isset($this->rows[$index]['penerimaan_id'])) {
                 try { 
-                    Penerimaan_Ikan::where('penerimaan_id', $this->rows[$index]['penerimaan_id'])->delete();
+                    PenerimaanIkanModel::where('penerimaan_id', $this->rows[$index]['penerimaan_id'])->delete();
                     session()->flash('message', 'Data berhasil dihapus');
                 } catch (\Exception $e) {
                     session()->flash('error', 'Gagal menghapus data: ' . $e->getMessage());
@@ -147,7 +151,7 @@ class PenerimaanIkan extends Component
 
     public function saveAll()
     {
-        \Log::info('Menyimpan Data', [
+        Log::info('Menyimpan Data', [
             'selected_grade_id' => $this->selected_grade_id,
             'rows' => $this->rows
         ]);
@@ -170,13 +174,13 @@ class PenerimaanIkan extends Component
             throw new \Exception('Grade/size tidak valid');
         }
         list($grade_id, $kategori_berat_id) = explode('_', $this->selected_grade_id);
-        \Log::info('Data yang disimpan', [
+        Log::info('Data yang disimpan', [
             'grade_id' => $grade_id,
             'kategori_berat_id' => $kategori_berat_id,
             'rows' => $this->rows
         ]);
         foreach ($this->rows as $row) {
-            $exists = Penerimaan_Ikan::where('tgl_penerimaan', $this->session_date)
+            $exists = PenerimaanIkanModel::where('tgl_penerimaan', $this->session_date)
                 ->where('tgl_bongkar', $this->session_tgl_bongkar)
                 ->where('supplier_id', $this->session_supplier)
                 ->where('jenis_penerimaan', $this->session_jenis_penerimaan)
@@ -189,7 +193,8 @@ class PenerimaanIkan extends Component
                 ->exists();
 
             if(!$exists) {
-                $penerimaan = Penerimaan_Ikan::create([
+                /** @disregard P1013 */
+                $penerimaan = PenerimaanIkanModel::create([
                     'tgl_penerimaan' => $this->session_date,
                     'tgl_bongkar' => $this->session_tgl_bongkar,
                     'supplier_id' => $this->session_supplier,
@@ -210,7 +215,7 @@ class PenerimaanIkan extends Component
             session()->flash('message', 'Data berhasil disimpan!');
 
         } catch (\Exception $e) {
-            \Log::error('Error saving data: ' . $e->getMessage());
+            Log::error('Error saving data: ' . $e->getMessage());
             session()->flash('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
@@ -256,7 +261,7 @@ class PenerimaanIkan extends Component
                 ]);
     
                 // Inisialisasi query dengan eager loading
-                $query = Penerimaan_Ikan::query()
+                $query = PenerimaanIkanModel::query()
                     ->with(['supplier', 'grade', 'kategoriBeratPenerimaan']);
                 
                 // Filter berdasarkan form input
@@ -308,7 +313,7 @@ class PenerimaanIkan extends Component
             }
     
         } catch (\Exception $e) {
-            \Log::error('Error filtering data: ' . $e->getMessage());
+            Log::error('Error filtering data: ' . $e->getMessage());
             $this->data = collect();
             $this->penerimaanIkans = collect();
             $this->rows = [];
@@ -392,7 +397,7 @@ class PenerimaanIkan extends Component
     
         } catch (\Exception $e) {
             $this->dispatch('show-error', message: 'Gagal mencetak: ' . $e->getMessage());
-            \Log::error('Error in print: ' . $e->getMessage());
+            Log::error('Error in print: ' . $e->getMessage());
             //session()->flash('error', 'Gagal mencetak: ' . $e->getMessage());
         }
     
@@ -414,7 +419,7 @@ class PenerimaanIkan extends Component
             'grades' => $this->grades,
             'kategori_berat' => $this->kategori_berat,
             'session_no_bak' => $this->session_no_bak,
-            'records' => Penerimaan_Ikan::with(['grade', 'kategoriBeratPenerimaan'])->get(),
+            'records' => PenerimaanIkanModel::with(['grade', 'kategoriBeratPenerimaan'])->get(),
         ])->layout('layouts.app');
     }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\GradeLController;
 use App\Http\Controllers\GradeSController;
 use App\Http\Controllers\GradeHController;
 use App\Http\Controllers\PenerimaanIkanController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupplierController;
 use App\Models\Cutting;
 use App\Models\CuttingL;
@@ -54,6 +55,7 @@ Route::resource('grade_hservice', GradeHController::class)
 Route::resource('cutting', CuttingController::class)->middleware('auth');
 Route::resource('cuttingl', CuttingLController::class)->middleware('auth');
 Route::resource('servicel', ServiceLController::class)->middleware('auth');
+Route::resource('service', ServiceController::class)->middleware('auth');
 Route::resource('kategori-byproduk-ct', KategoriByprodukCtController::class)
     ->parameters(['kategori-byproduk-ct' => 'kategori_byproduk_id'])
     ->middleware('auth');

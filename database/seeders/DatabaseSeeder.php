@@ -7,12 +7,10 @@ use App\Models\Supplier;
 use App\Models\Grade;
 use App\Models\GradeL;
 use App\Models\GradeService;
-use App\Models\GradeHservice;
+use App\Models\GradeHService;
 use App\Models\KategoriBeratPenerimaan;
 use App\Models\KategoriByprodukCt;
 use App\Models\KategoriProduk;
-
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -116,7 +114,7 @@ class DatabaseSeeder extends Seeder
             ['grade_servicehs' => 'Loin LB'],
             ['grade_servicehs' => 'Loin LH'],
         ];
-        GradeHservice::insert($gradehs);
+        GradeHService::insert($gradehs);
 
         //Buat data grade service
         $gradeservice = [

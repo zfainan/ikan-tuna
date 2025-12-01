@@ -12,8 +12,8 @@
             <div class="page-title">
                 <div class="row">
                     <div class="col-12 col-md-6 order-md-1 order-last">
-                        <h3>Data Cutting Produk</h3>
-                        <p class="text-subtitle text-muted">Silahkan kelola data cutting by produk</p>
+                        <h3>Data Service by Produk</h3>
+                        <p class="text-subtitle text-muted">Silahkan kelola data service by produk</p>
                     </div>
 
                     <div class="col-12 col-md-6 order-md-2 order-first">
@@ -28,21 +28,21 @@
             </div>
 
             <section class="section">
-                <div class="modal fade" id="tambahCuttingModal" tabindex="-1" role="dialog"
-                    aria-labelledby="tambahCuttingModalTitle" aria-hidden="true">
+                <div class="modal fade" id="tambahServiceModal" tabindex="-1" role="dialog"
+                    aria-labelledby="tambahServiceModalTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                         <div class="modal-content"></div>
                     </div>
                 </div>
                 <div class="card-body">
-                    @livewire('cutting-by-p')
+                    @livewire('service-by-p')
                 </div>
             </section>
 
             <section class="section mt-4">
                 <div class="card" style="border-radius: 10px; overflow: hidden;">
                     <div class="card-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                        <h4 class="card-title text-white mt-2">Daftar Cutting by Product</h4>
+                        <h4 class="card-title text-white mt-2">Daftar Service by Product</h4>
                     </div>
 
                     <div class="card-body mt-2">
@@ -59,7 +59,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($cutting as $item)
+                                    @foreach ($services as $item)
                                         <tr style="background: linear-gradient(to right, #f9f9f9 0%, #f0f7ff 100%);">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->no_batch }}</td>

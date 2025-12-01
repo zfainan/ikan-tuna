@@ -18,17 +18,17 @@
     <div class="card shadow-sm border-0">
         <div class="card-header py-2 px-3 text-white"
              style="background: linear-gradient(135deg,hsl(210, 97.60%, 48.80%),rgba(209, 202, 0, 0.88)); font-size: 0.85rem;">
-            <i class="bi bi-pencil-square me-1"></i>Form Input Data Cutting
+            <i class="bi bi-pencil-square me-1"></i>Form Input Data Service
         </div>
         <div class="card-body p-3">
             <div class="row g-2">
                 <div class="col-md-auto">
-                    <label for="session_tgl_cutting" class="form-label small">Tanggal Cutting</label>
-                    <input type="date" id="session_tgl_cutting" 
-                           wire:model.live="session_tgl_cutting" 
-                           class="form-control form-control-sm @error('session_tgl_cutting') is-invalid @enderror"
+                    <label for="session_tgl_service" class="form-label small">Tanggal Service</label>
+                    <input type="date" id="session_tgl_service" 
+                           wire:model.live="session_tgl_service" 
+                           class="form-control form-control-sm @error('session_tgl_service') is-invalid @enderror"
                            required>
-                    @error('session_tgl_cutting')
+                    @error('session_tgl_service')
                         <div class="invalid-feedback small">{{ $message }}</div>
                     @enderror
                 </div>
@@ -38,8 +38,8 @@
                     <input type="date" id="session_tgl_injek_co" 
                            wire:model.live="session_tgl_injek_co"
                            class="form-control form-control-sm @error('session_tgl_injek_co') is-invalid @enderror"
-                           @if(!$session_tgl_cutting) disabled @endif 
-                           min="{{ $session_tgl_cutting }}"
+                           @if(!$session_tgl_service) disabled @endif 
+                           min="{{ $session_tgl_service }}"
                            required>
                     @error('session_tgl_injek_co')
                         <div class="invalid-feedback small">{{ $message }}</div>
@@ -101,7 +101,7 @@
     {{-- Status Sesi --}}
     <div class="row mt-3">
         <div class="col-12">
-            @if($session_tgl_cutting && $session_tgl_injek_co && $penerimaan_id)
+            @if($session_tgl_service && $session_tgl_injek_co && $penerimaan_id)
                 @php    
                     $selectedPenerimaan = $penerimaan_ikan->firstWhere('penerimaan_id', $penerimaan_id);
                 @endphp
@@ -112,7 +112,7 @@
                     <div class="mt-1">
                         <div class="row">
                             <div class="col-4 text-start">
-                                <div><strong>Tanggal Cutting:</strong> {{ \Carbon\Carbon::parse($session_tgl_cutting)->format('d F Y') }}</div>
+                                <div><strong>Tanggal Service:</strong> {{ \Carbon\Carbon::parse($session_tgl_service)->format('d F Y') }}</div>
                                 <div><strong>Tanggal Injek CO:</strong> {{ \Carbon\Carbon::parse($session_tgl_injek_co)->format('d F Y') }}</div>
                             </div>
                             <div class="col-4 text-center">
@@ -128,8 +128,8 @@
                 <div class="p-2 rounded-3 shadow-sm text-white"
                     style="background:linear-gradient(135deg,hsl(210, 97.60%, 48.80%),rgba(209, 202, 0, 0.88)); border: 1px solid rgb(255, 255, 255); font-size: 0.75rem;">
                     <i class="bi bi-info-circle me-1"></i> 
-                    @if(!$session_tgl_cutting)
-                        Pilih tanggal cutting terlebih dahulu.
+                    @if(!$session_tgl_service)
+                        Pilih tanggal service terlebih dahulu.
                     @elseif(!$session_tgl_injek_co)
                         Pilih tanggal injek CO terlebih dahulu.
                     @elseif(!$selectedTanggalPenerimaan)
@@ -189,7 +189,7 @@
     <div class="d-flex justify-content-center my-3">
         <div class="card-header d-flex justify-content-between align-items-center py-1 px-2" style="max-width: 450px;">
             <span class="fw-semibold" style="font-size: 1.3rem; font-family: 'Copperplate', fantasy; color:rgb(16, 10, 10); letter-spacing: 1px; text-transform: uppercase;">
-                <img src="/img/Logo.png" alt="Logo" width="100" height="100"> Tally Cutting By Produk</span>
+                <img src="/img/Logo.png" alt="Logo" width="100" height="100"> Tally Service By Produk</span>
         </div>
     </div>
 

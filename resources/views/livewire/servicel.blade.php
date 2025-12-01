@@ -200,7 +200,7 @@
     <div class="d-flex justify-content-center my-3">
         <div class="card-header d-flex justify-content-between align-items-center py-1 px-2" style="max-width: 450px;">
             <span class="fw-semibold" style="font-size: 1.3rem; font-family: 'Copperplate', fantasy; color:rgb(16, 10, 10); letter-spacing: 1px; text-transform: uppercase;">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo" width="100" height="100"> Tally Service Loin</span>
+                <img src="/img/Logo.png" alt="Logo" width="100" height="100"> Tally Service Loin</span>
         </div>
     </div>
 

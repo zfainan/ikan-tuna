@@ -4,7 +4,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="logo">
                     <a href="/admin">
-                        <img src="{{ asset('img/logo.png') }}" alt="Logo" srcset="">
+                        <img src="{{ asset('img/Logo.png') }}" alt="Logo" srcset="">
                     </a>
                 </div>
 
@@ -152,6 +152,10 @@
 
                         <li class="submenu-item  {{ Request::is('servicel') ? 'active' : '' }}">
                             <a href="/servicel" class="submenu-link">Service by Loin</a>
+                        </li>
+
+                        <li class="submenu-item  {{ Request::is('service') ? 'active' : '' }}">
+                            <a href="/service" class="submenu-link">Service by Produk</a>
                         </li>
                     </ul>
                 </li>

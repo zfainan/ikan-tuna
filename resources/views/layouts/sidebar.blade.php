@@ -157,6 +157,10 @@
                         <li class="submenu-item  {{ Request::is('service') ? 'active' : '' }}">
                             <a href="/service" class="submenu-link">Service by Produk</a>
                         </li>
+
+                        <li class="submenu-item  {{ Request::is('packings') ? 'active' : '' }}">
+                            <a href="/packings" class="submenu-link">Packing</a>
+                        </li>
                     </ul>
                 </li>
 

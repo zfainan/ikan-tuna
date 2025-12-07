@@ -14,6 +14,7 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GradeLController;
 use App\Http\Controllers\GradeSController;
 use App\Http\Controllers\GradeHController;
+use App\Http\Controllers\PackingController;
 use App\Http\Controllers\PenerimaanIkanController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupplierController;
@@ -81,6 +82,7 @@ Route::middleware('is_admin')->group(function () {
         ->parameters(['kategori-byproduk-ct'=> 'kategori_byproduk_id']);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('penerimaan_ikan', PenerimaanIkanController::class);
+    Route::resource('packings', PackingController::class);
 });
 
 //MIDDLEWARE KARYAWAN

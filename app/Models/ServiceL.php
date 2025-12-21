@@ -22,6 +22,29 @@ class ServiceL extends Model
         'kode_lot',
         'berat_loin',
         'pcs_loin',
+
+        // Col 1-7
+        'kategori_1',
+        'berat_1',
+        'pcs_1',
+        'kategori_2',
+        'berat_2',
+        'pcs_2',
+        'kategori_3',
+        'berat_3',
+        'pcs_3',
+        'kategori_4',
+        'berat_4',
+        'pcs_4',
+        'kategori_5',
+        'berat_5',
+        'pcs_5',
+        'kategori_6',
+        'berat_6',
+        'pcs_6',
+        'kategori_7',
+        'berat_7',
+        'pcs_7',
     ];
 
     public function penerimaan()
@@ -36,6 +59,6 @@ class ServiceL extends Model
 
     public function kategori_produk()
     {
-        return $this->belongsTo(Kategori_produk::class, 'kategori_produk_id');
+        return $this->belongsTo(KategoriProduk::class, 'kategori_produk_id');
     }
 }

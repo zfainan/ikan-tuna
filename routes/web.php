@@ -37,7 +37,6 @@ Route::get('/cutting-pdf', [CuttingController::class, 'cuttingPdf'])->name('cutt
 Route::get('/kategori-byproduk-ct-pdf', [KategoriByprodukCtController::class, 'kategoriByprodukCtPdf'])->name('kategori-byproduk-ct.pdf');
 Route::get('/grading', \App\Livewire\GradingProses::class)->name('grading.index')->middleware('auth');
 Route::get('/cuttingl', \App\Livewire\CuttingByL::class)->name('cuttingl.index')->middleware('auth');
-Route::get('/servicel', \App\Livewire\ServiceByL::class)->name('servicel.index')->middleware('auth');
 
 //PUT
 Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');

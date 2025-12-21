@@ -48,4 +48,9 @@ class PenerimaanIkan extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'supplier_id');
     }
+
+    public function cuttingls()
+    {
+        return $this->hasMany(CuttingL::class, 'penerimaan_id', 'penerimaan_id');
+    }
 }

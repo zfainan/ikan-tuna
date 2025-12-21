@@ -2,428 +2,353 @@
 
 namespace App\Livewire;
 
+use Livewire\Component;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\CuttingL;
 use App\Models\PenerimaanIkan;
 use App\Models\GradeL;
 use App\Models\GradeService;
 use App\Models\GradeHService;
-use Livewire\Component;
-use Livewire\Attributes\On;
-use Livewire\Attributes\Renderless;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CuttingByL extends Component
-{         
-    // Data Cutting loin               
-    public $session_tggl_cutting;                  
-    public $session_tggl_injek_co;                  
-    public $session_tggl_service; 
-    public $no_batch;
-    public $suhu_loin;
-    public $no_loin;
+{
+    /* =======================
+     * SESSION / FILTER INPUT
+     * ======================= */
+    public $session_tggl_cutting;
+    public $session_tggl_injek_co;
+    public $session_tggl_service;
 
-    public $berat_loin = 0;                         // penjumlahan berat
-    public $total_loin = 0;
-    public $berat_rm = [1=> 0, 2=> 0, 3=> 0];       // array rm
-    public $total_rm = 0;
-    public $berat_hs = [1=> 0, 2=> 0, 3=> 0];       // array hs
-    public $total_hs = 0;
-    public $pcs_rm = [1=> 0, 2=> 0, 3=> 0];
-    public $pcs_hs = [1=> 0, 2=> 0, 3=> 0];
-    
-    public $penerimaan_id;                          // Data Penerimaan
-    public $no_ikan;
-    public $selectedPenerimaan;
     public $penerimaan_ikan;
     public $filteredPenerimaan = [];
-    public $selectedTanggalPenerimaan;              // selected tgl penerimaan
-    public $updateFilterTanggal;
-    public $sizingLoin = [];
-    public $gradingService = [];
-    public $gradingHservice = [];
+    public $selectedTanggalPenerimaan;
+    public $penerimaan_id;
 
-    //newpropertiform
-    public $cutting_id;
-    public $isModalOpen = false;
-    public $search = '';
-    public $perPage = 10;
-    public $sortField = 'tggl_cutting';
-    public $sortDirection = 'desc';
-    public $allBatches = [];
+    /* =======================
+     * MASTER DATA
+     * ======================= */
+    public $sizingLoin;
+    public $gradingService;
+    public $gradingHservice;
 
+    /* =======================
+     * SPREADSHEET DATA
+     * ======================= */
     public $rows = [];
+    public $noBatch = '';
+    public ?int $selectedSizingLoin = null;
+    public ?int $selectedGradingService1 = null;
+    public ?int $selectedGradingService2 = null;
+    public ?int $selectedGradingService3 = null;
+    public ?int $selectedGradingHService1 = null;
+    public ?int $selectedGradingHService2 = null;
+    public ?int $selectedGradingHService3 = null;
 
-// inisialisasi data
+    /* =======================
+     * TOTALS
+     * ======================= */
+    public $berat_loin = 0;
+    public $pcs_loin = 0;
+
+    public $berat_rm = [0, 0, 0];
+    public $pcs_rm = [0, 0, 0];
+
+    public $berat_hs = [0, 0, 0];
+    public $pcs_hs = [0, 0, 0];
+
+    /* =======================
+     * INIT
+     * ======================= */
     public function mount()
     {
-        $this->penerimaan_ikan = PenerimaanIkan::with(['supplier' => function ($query) {
-            $query->select('supplier_id', 'nama_supplier', 'alamat');
-        }])
-            ->select('penerimaan_ikans.*')
+        $this->penerimaan_ikan = PenerimaanIkan::with('supplier')
             ->orderBy('tgl_penerimaan', 'desc')
-            ->get()
-            ->unique('supplier_id')
-            ->map(function ($item) {
-                $item->tgl_penerimaan = \Carbon\Carbon::parse($item->tgl_penerimaan)->toDateString();
-                return $item;
-            })
-            ->filter(function ($item) {
-                return $item->supplier_id !== null;
-            })
-            ->values();
+            ->get();
 
         $this->sizingLoin = GradeL::all();
-        $this->selectedSizingLoin = [1 => null];
-        $this->gradingService = \App\Models\GradeService::all();
-        $this->selectedGradingService = [1 => null, 2 => null, 3 => null];
-        $this->gradingHservice = \App\Models\GradeHService::all();
-        $this->selectedGradingHservice = [1 => null, 2 => null, 3 => null];
+        $this->gradingService = GradeService::all();
+        $this->gradingHservice = GradeHService::all();
 
-        //Inisialisasi filter tanggal
-        $this->filterTanggalCutting = $this->session_tggl_cutting;
-        $this->filterTanggalInjekCo = $this->session_tggl_injek_co;
-        $this->filterTanggalService = $this->session_tggl_service;
-        if ($this->filterTanggalCutting || $this->filterTanggalInjekCo || $this->filterTanggalService) {
-            $this->searchByBatch();
-        }
-
-        //inisialisasi array
-        $this->berat_rm = [0, 0, 0];
-        $this->pcs_rm = [0, 0, 0];
-        $this->berat_hs = [0, 0, 0];
-        $this->pcs_hs = [0, 0, 0];
-        $this->pcs_loin = 0;
-        $this->berat_loin = 0;
-        $this->selectedTanggalPenerimaan = null;
-        $this->filteredPenerimaan = collect();
-        
-        //inisialisasi no batch & load data
-        $this->allBatches = $this->getAvailableBatches();
-        $this->loadData();
+        $this->rows = [];
+        $this->addRow();
     }
 
-//otomatis dipanggil jika penerimaan_id berubah
-    public function updatedPenerimaanId($value) 
+    /* =======================
+     * FILTER HANDLER
+     * ======================= */
+    public function updatedSessionTgglCutting()
     {
-        if ($value) {
-            $penerimaan = PenerimaanIkan::find($value);
-            if ($penerimaan) {
-                $this->selectedPenerimaan = $penerimaan;
-                $this->no_ikan = $penerimaan->no_ikan;
-            }
-        }else {
-            $this->selectedPenerimaan = null;
-            $this->no_ikan = null;
-        }
+        $this->reset(['session_tggl_injek_co', 'session_tggl_service', 'selectedTanggalPenerimaan', 'penerimaan_id', 'rows']);
+        $this->addRow();
     }
 
-//memanggil tanggal penerimaan ke cutting/service loin
+    public function updatedSessionTgglInjekCo()
+    {
+        $this->reset(['session_tggl_service', 'selectedTanggalPenerimaan', 'penerimaan_id', 'rows']);
+        $this->addRow();
+    }
+
     public function updatedSelectedTanggalPenerimaan($value)
     {
-        $this->selectedTanggalPenerimaan = $value;
-        $this->penerimaan_id = $value;
-        $this->no_ikan = null;
-
         if ($value) {
-            $this->filteredPenerimaan = $this->penerimaan_ikan->filter(function ($item) use ($value) {
-                return \Carbon\Carbon::parse($item->tgl_penerimaan)->toDateString() === $value;
-            })->values();
+            $this->filteredPenerimaan = PenerimaanIkan::where('penerimaan_id', $value)
+                ->with('supplier')
+                ->get();
         } else {
             $this->filteredPenerimaan = collect();
         }
-    }
-    public function updatedSelectedGradingService($value, $key)
-    {
-        $this->updatedSelectedGradingService[$key] = $value;
-    }
-    public function updatedSelectedGradingHservice($value, $key)
-    {
-        $this->updatedSelectedGradingHservice[$key] = $value;
+
+        $this->penerimaan_id = null;
     }
 
-//tambah row
+    public function updatedPenerimaanId()
+    {
+        if ($this->session_tggl_cutting && $this->session_tggl_injek_co && $this->session_tggl_service && $this->penerimaan_id) {
+            $first = CuttingL::where('tggl_cutting', $this->session_tggl_cutting)
+                ->where('tggl_injek_co', $this->session_tggl_injek_co)
+                ->where('tggl_service', $this->session_tggl_service)
+                ->where('penerimaan_id', $this->penerimaan_id)
+                ->first();
+
+            if ($first) {
+                $this->noBatch = $first->no_batch;
+                $this->selectedSizingLoin = $first->grade_size_id;
+                $this->selectedGradingService1 = $first->rm_grade_1;
+                $this->selectedGradingService2 = $first->rm_grade_2;
+                $this->selectedGradingService3 = $first->rm_grade_3;
+                $this->selectedGradingHService1 = $first->hs_grade_1;
+                $this->selectedGradingHService2 = $first->hs_grade_2;
+                $this->selectedGradingHService3 = $first->hs_grade_3;
+            } else {
+                $this->resetHeader();
+            }
+
+            $this->loadData();
+        } else {
+            $this->resetHeader();
+            $this->reset(['rows']);
+            $this->addRow();
+        }
+    }
+
+    /* =======================
+     * ROW MANIPULATION
+     * ======================= */
     public function addRow()
     {
         $this->rows[] = [
-            'berat_loin' => '',
-            'suhu_loin' => '',
-            'no_loin' => '',
+            'cuttingl_id' => null,
+            'no_batch' => '',
             'grade_size_id' => null,
-            'grade_service_id' => null,
-            'grade_servicehs_id' => null,
-            'penerimaan_id' => null,
-            'berat_1' => '', 'berat_2' => '', 'berat_3' => '',
-            'berat_4' => '', 'berat_5' => '', 'berat_6' => '',
+            'no_loin' => '',
+            'berat_loin' => 0,
+            'suhu_loin' => 0,
+
+            // RM
+            'rm_grade_1' => null,
+            'rm_grade_2' => null,
+            'rm_grade_3' => null,
+            'rm_berat_1' => 0,
+            'rm_berat_2' => 0,
+            'rm_berat_3' => 0,
+
+            // HS
+            'hs_grade_1' => null,
+            'hs_grade_2' => null,
+            'hs_grade_3' => null,
+            'hs_berat_1' => 0,
+            'hs_berat_2' => 0,
+            'hs_berat_3' => 0,
         ];
     }
 
-//hapus row
     public function removeRow($index)
     {
-        info($this->rows);
-        return;
-        
-        try {
-            $row = $this->rows[$index] ?? null;
-            if (isset($row['cutting_id'])) {
-                \App\Models\CuttingL::where('cutting_id', $row['cutting_id'])->delete();
-            }
-            unset($this->rows[$index]);
-            $this->rows = array_values($this->rows);
-            $this->calculateTotals();
+        if (!isset($this->rows[$index])) return;
 
-            if ($this->no_batch) {
-                $this->searchByBatch();
-            }
-        } catch (\Exception $e) {
-
+        $id = $this->rows[$index]['cuttingl_id'] ?? null;
+        if ($id) {
+            CuttingL::where('cuttingl_id', $id)->delete();
         }
+
+        unset($this->rows[$index]);
+        $this->rows = array_values($this->rows);
+
+        if (empty($this->rows)) {
+            $this->addRow();
+        }
+
+        $this->calculateTotals();
     }
 
-//hitung total berat & pcs
+    public function resetHeader(): void
+    {
+        $this->reset([
+            'noBatch',
+            'selectedSizingLoin',
+            'selectedGradingService1',
+            'selectedGradingService2',
+            'selectedGradingService3',
+            'selectedGradingHService1',
+            'selectedGradingHService2',
+            'selectedGradingHService3'
+        ]);
+    }
+
+    /* =======================
+     * LOAD DATA (SPREADSHEET)
+     * ======================= */
+    public function loadData()
+    {
+        $query = CuttingL::where('tggl_cutting', $this->session_tggl_cutting)
+            ->where('tggl_injek_co', $this->session_tggl_injek_co)
+            ->where('tggl_service', $this->session_tggl_service)
+            ->where('penerimaan_id', $this->penerimaan_id);
+
+        if (!empty($this->noBatch)) {
+            $query->where('no_batch', $this->noBatch);
+        }
+
+        $data = $query->get();
+
+        $this->rows = $data->map(fn($c) => [
+            'cuttingl_id' => $c->cuttingl_id,
+            'no_batch' => $c->no_batch,
+            'grade_size_id' => $c->grade_size_id,
+            'no_loin' => $c->no_loin,
+            'berat_loin' => $c->berat_loin,
+            'suhu_loin' => $c->suhu_loin,
+
+            'rm_grade_1' => $c->rm_grade_1,
+            'rm_grade_2' => $c->rm_grade_2,
+            'rm_grade_3' => $c->rm_grade_3,
+            'rm_berat_1' => $c->rm_berat_1,
+            'rm_berat_2' => $c->rm_berat_2,
+            'rm_berat_3' => $c->rm_berat_3,
+
+            'hs_grade_1' => $c->hs_grade_1,
+            'hs_grade_2' => $c->hs_grade_2,
+            'hs_grade_3' => $c->hs_grade_3,
+            'hs_berat_1' => $c->hs_berat_1,
+            'hs_berat_2' => $c->hs_berat_2,
+            'hs_berat_3' => $c->hs_berat_3,
+        ])->toArray();
+
+        if (empty($this->rows)) {
+            $this->addRow();
+        }
+
+        $this->calculateTotals();
+    }
+
+    /* =======================
+     * TOTAL CALCULATION
+     * ======================= */
     public function calculateTotals()
     {
         $this->berat_loin = 0;
+        $this->pcs_loin = count($this->rows);
+
         $this->berat_rm = [0, 0, 0];
         $this->pcs_rm = [0, 0, 0];
+
         $this->berat_hs = [0, 0, 0];
         $this->pcs_hs = [0, 0, 0];
 
-        //inisialisasi array untuk berat
-        $berat = [];
-        $berat_rm = 0;
-        $berat_hs = 0;
-        for ($i=0; $i <= 5; $i++) {
-            $berat[$i] = 0;
-        }
+        foreach ($this->rows as $row) {
+            $this->berat_loin += (float)$row['berat_loin'];
 
-        //hitung total & pcs dari semua rows
-        foreach($this->rows as $row) {
-            //total berat (cutting loin)
-            $this->berat_loin += (float) ($row['berat_loin'] ?? 0);
+            for ($i = 1; $i <= 3; $i++) {
+                $rm = (float)$row['rm_berat_' . $i];
+                $hs = (float)$row['hs_berat_' . $i];
 
-            //total berat (RM service & pcs)
-            for ($i= 1; $i <= 3; $i++) {
-                $berat = (float) ($row['berat_' . $i] ?? 0);
-                $this->berat_rm[$i-1] += $berat;
-                if ($berat > 0) {
-                    $this->pcs_rm[$i-1]++;
-                }
-            } 
-            
-            //total berat (HS service & pcs)
-            for ($i=4; $i <= 6; $i++) {
-                $berat = (float) ($row['berat_' . $i] ?? 0);
-                $this->berat_hs[$i-4] += $berat;
-                if ($berat > 0) {
-                    $this->pcs_hs[$i-4]++;
-                }
+                $this->berat_rm[$i - 1] += $rm;
+                $this->berat_hs[$i - 1] += $hs;
+
+                if ($rm > 0) $this->pcs_rm[$i - 1]++;
+                if ($hs > 0) $this->pcs_hs[$i - 1]++;
             }
         }
-        // property untuk digunakan pada view
-        $this->berat = $berat;
-        $this->berat_rm = array_map('floatval', $this->berat_rm);
-        $this->berat_hs = array_map('floatval', $this->berat_hs);
-        $this->pcs_loin = count($this->rows);
     }
 
-//untuk mendapatkan daftar batch
-private function getAvailableBatches()
-{
-    return CuttingL::select('no_batch')
-        ->distinct()
-        ->orderBy('no_batch', 'desc')
-        ->pluck('no_batch')
-        ->toArray();
-}
-
-//reset form
-private function resetForm()
-{
-    $this->reset([
-        'cutting_id', 'no_loin', 'berat_loin', 'suhu_loin', 
-        'pcs_loin', 'berat_rm', 'pcs_rm', 'berat_hs', 'pcs_hs',
-        'penerimaan_id', 'grade_size_id', 'grade_service_id', 'grade_servicehs_id'
-    ]);
-}
-
-//modal form
-    public function create()
-    {
-        $this->resetForm();
-        $this->isModalOpen = true;
-    }
-
-//edit data
-    public function edit($id)
-    {
-        $this->cutting_id = $id;
-        $cutting = CuttingL::find($id);
-        $this->no_loin = $cutting->no_loin;
-        $this->berat_loin = $cutting->berat_loin;
-        $this->suhu_loin = $cutting->suhu_loin;
-        $this->pcs_loin = $cutting->pcs_loin;
-        $this->berat_rm = $cutting->berat_rm;
-        $this->pcs_rm = $cutting->pcs_rm;
-        $this->berat_hs = $cutting->berat_hs;
-        $this->pcs_hs = $cutting->pcs_hs;
-        $this->penerimaan_id = $cutting->penerimaan_id;
-        $this->grade_size_id = $cutting->grade_size_id;
-        $this->grade_service_id = $cutting->grade_service_id;
-        $this->grade_servicehs_id = $cutting->grade_servicehs_id;
-
-        $this->isModalOpen = true;
-    }
-
-//simpan data
+    /* =======================
+     * SAVE DATA
+     * ======================= */
     public function saveAll()
     {
-        $validatedData = $this->validate([
-            'no_loin' => 'required|string|max:50',
-            'berat_loin' => 'required|numeric|min:0',
-            'suhu_loin' => 'required|numeric',
-            'no_batch' => 'required|string|max:50',
+        $this->validate([
             'session_tggl_cutting' => 'required|date',
-            'session_tggl_injek_co' => 'required|date',
-            'session_tggl_service' => 'required|date',
+            'session_tggl_injek_co' => 'required|date|after_or_equal:session_tggl_cutting',
+            'session_tggl_service' => 'required|date|after_or_equal:session_tggl_injek_co',
+            'penerimaan_id' => 'required',
         ]);
 
+        if (empty($this->noBatch)) {
+            session()->flash('error', 'No Batch tidak boleh kosong');
+            return;
+        }
+
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
+            CuttingL::where('tggl_cutting', $this->session_tggl_cutting)
+                ->where('tggl_injek_co', $this->session_tggl_injek_co)
+                ->where('tggl_service', $this->session_tggl_service)
+                ->where('penerimaan_id', $this->penerimaan_id)
+                ->where('no_batch', $this->noBatch)
+                ->delete();
 
-            $data = [
-                'tggl_cutting' => $this->session_tggl_cutting,
-                'tggl_injek_co' => $this->session_tggl_injek_co,
-                'tggl_service' => $this->session_tggl_service,
-                'no_batch' => $this->no_batch,
-                'no_loin' => $this->no_loin,
-                'berat_loin' => $this->berat_loin,
-                'suhu_loin' => $this->suhu_loin,
-                'pcs_loin' => $this->pcs_loin ?? 0,
-                'berat_rm' => $this->berat_rm ?? 0,
-                'pcs_rm' => $this->pcs_rm ?? 0,
-                'berat_hs' => $this->berat_hs ?? 0,
-                'pcs_hs' => $this->pcs_hs ?? 0,
-                'penerimaan_id' => $this->penerimaan_id,
-                'grade_size_id' => $this->grade_size_id,
-                'grade_service_id' => $this->grade_service_id,
-                'grade_servicehs_id' => $this->grade_servicehs_id,
-            ];
+            foreach ($this->rows as $row) {
+                CuttingL::create([
+                    'tggl_cutting' => $this->session_tggl_cutting,
+                    'tggl_injek_co' => $this->session_tggl_injek_co,
+                    'tggl_service' => $this->session_tggl_service,
+                    'penerimaan_id' => $this->penerimaan_id,
 
-            if ($this->cutting_id) {
-                // Update existing
-                CuttingL::find($this->cutting_id)->update($data);
-                session()->flash('message', 'Data berhasil diupdate.');
-            } else {
-                // Create new
-                CuttingL::create($data);
-                session()->flash('message', 'Data berhasil ditambahkan.');
+                    'no_batch' => $this->noBatch,
+                    'grade_size_id' => $this->selectedSizingLoin,
+                    'rm_grade_1' => $this->selectedGradingService1,
+                    'rm_grade_2' => $this->selectedGradingService2,
+                    'rm_grade_3' => $this->selectedGradingService3,
+                    'hs_grade_1' => $this->selectedGradingHService1,
+                    'hs_grade_2' => $this->selectedGradingHService2,
+                    'hs_grade_3' => $this->selectedGradingHService3,
+
+                    'no_loin' => $row['no_loin'],
+                    'berat_loin' => $row['berat_loin'],
+                    'suhu_loin' => $row['suhu_loin'],
+
+                    'rm_berat_1' => $row['rm_berat_1'],
+                    'rm_berat_2' => $row['rm_berat_2'],
+                    'rm_berat_3' => $row['rm_berat_3'],
+
+                    'hs_berat_1' => $row['hs_berat_1'],
+                    'hs_berat_2' => $row['hs_berat_2'],
+                    'hs_berat_3' => $row['hs_berat_3'],
+                ]);
             }
 
             DB::commit();
-            $this->isModalOpen = false;
+            session()->flash('message', 'Data berhasil disimpan');
             $this->loadData();
-            
-        } catch (\Exception $e) {
-            DB::rollback();
-            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            session()->flash('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 
-//hapus data
-    public function delete($id)
-    {
-        try {
-            $cutting = CuttingL::findOrFail($id);
-            $cutting->delete();
-            session()->flash('message', 'Data berhasil dihapus.');
-            $this->loadData();
-        } catch (\Exception $e) {
-            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
-    }
-
-//sorting
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortDirection = 'asc';
-        }
-        $this->sortField = $field;
-        $this->loadData();
-    }
-    public function searchByBatch()
-    {
-        return CuttingL::with(['penerimaan', 'grade_size', 'grade_service', 'grade_servicehs'])
-            ->where('no_batch', $this->no_batch)
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->perPage);
-    }
-
-//loadData dengan filter
-    public function loadData()
-    {
-        $query = CuttingL::query()
-            ->with([
-                'penerimaan',
-                'grade_size',
-                'grade_service',
-                'grade_servicehs',
-            ])
-            ->when($this->search, function($query) {
-                $query->where('no_loin', 'like', '%' . $this->search . '%')
-                    ->orWhere('no_batch', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection);
-
-        $this->cuttingData = $query->paginate($this->perPage);
-    }
-
-//render view
+    /* =======================
+     * RENDER
+     * ======================= */
     public function render()
     {
-        // filter berdasarlan tgl penerimaan
-        $filteredPenerimaan = $this->penerimaan_ikan;
-        if ($this->selectedTanggalPenerimaan) {
-            //jika memilih tgl penerimaan
-            $filteredPenerimaan = $this->penerimaan_ikan->filter(function($item) {
-                return $item->tgl_penerimaan == $this->selectedTanggalPenerimaan;
-            });
-        }
-        //perhitungan total & pcs
-        $this->calculateTotals();
-        $this->allBatches = $this->getAvailableBatches();
-
-        $this->loadData();
-        $query = CuttingL::query()
-            ->with(['penerimaan', 'grade_size', 'grade_service', 'grade_servicehs'])
-            ->when($this->search, function($query) {
-                $query->where('no_loin', 'like', '%' . $this->search . '%')
-                    ->orWhere('no_batch', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection);
-
-        $cuttingData = collect();
-        if (!empty($this->no_batch)) {
-            $cuttingData = $this->searchByBatch();
-        } else {
-            $cuttingData = $query->paginate($this->perPage);
-        }
-
-        $selectedGradingService = $this->selectedGradingService ?? [1 => null, 2 => null, 3 => null];
-        $gradingService = $this->gradingService ?? collect();
-        $selectedGradingHservice = $this->selectedGradingHservice ?? [4 => null, 5 => null, 6 => null];
-        $gradingHservice = $this->gradingHservice ?? collect();
-
         return view('livewire.cuttingl', [
-            'cuttingData' => $cuttingData,
             'penerimaan_ikan' => $this->penerimaan_ikan,
             'sizingLoin' => $this->sizingLoin,
             'gradingService' => $this->gradingService,
             'gradingHservice' => $this->gradingHservice,
-            ]);
+        ]);
     }
 }

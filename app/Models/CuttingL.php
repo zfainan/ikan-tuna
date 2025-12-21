@@ -31,6 +31,21 @@ class CuttingL extends Model
         'grade_servicehs_id',
         'berat_hs',
         'pcs_hs',
+
+        // RM
+        'rm_grade_1',
+        'rm_grade_2',
+        'rm_grade_3',
+        'rm_berat_1',
+        'rm_berat_2',
+        'rm_berat_3',
+        // HS
+        'hs_grade_1',
+        'hs_grade_2',
+        'hs_grade_3',
+        'hs_berat_1',
+        'hs_berat_2',
+        'hs_berat_3',
     ];
 
     public function grade_size()
@@ -53,4 +68,3 @@ class CuttingL extends Model
         return $this->belongsTo(GradeHService::class, 'grade_servicehs_id');
     }
 }
-

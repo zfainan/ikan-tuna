@@ -19,10 +19,8 @@ use App\Http\Controllers\PenerimaanIkanController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupplierController;
 use App\Models\Cutting;
-use App\Models\CuttingL;
-use App\Models\ServiceL;
+use App\Models\KategoriProduk;
 use App\Models\PenerimaanIkan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 //POST
@@ -77,7 +75,6 @@ Route::middleware('is_admin')->group(function () {
     Route::resource('grade_hservice', GradeHController::class);
     Route::resource('kategori_berat_penerimaan', KategoriBeratPenerimaanController::class)
         ->parameters(['kategori_berat_penerimaan' => 'kategori_berat_id']);
-    Route::resource('kategori_berat_cutting', KategoriBeratCuttingController::class);
     Route::resource('kategori-byproduk-ct', KategoriByprodukCtController::class)
         ->parameters(['kategori-byproduk-ct'=> 'kategori_byproduk_id']);
     Route::resource('suppliers', SupplierController::class);
@@ -117,7 +114,7 @@ Route::get('/laporan_stok_keluar', function () {
     return view('admin.laporan_stok_keluar');
 })->middleware('is_admin');
 
-Route::get('/get-grade/{ikan}', function (Kategori_produk $ikan) {
+Route::get('/get-grade/{ikan}', function (KategoriProduk $ikan) {
     return response()->json(['grade' => $ikan->grade]);
 });
 

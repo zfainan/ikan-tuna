@@ -38,46 +38,6 @@
                     @livewire('service-by-p')
                 </div>
             </section>
-
-            <section class="section mt-4">
-                <div class="card" style="border-radius: 10px; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                        <h4 class="card-title text-white mt-2">Daftar Service by Product</h4>
-                    </div>
-
-                    <div class="card-body mt-2">
-                        <div class="table-responsive">
-                            <table class="table-hover table" id="table2">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th style="width: 50px;">No</th>
-                                        <th>Nomor Batch</th>
-                                        <th>Berat Produk</th>
-                                        <th>Total Produk</th>
-                                        <th>By Produk</th>
-                                        <th>Tanggal Penerimaan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($services as $item)
-                                        <tr style="background: linear-gradient(to right, #f9f9f9 0%, #f0f7ff 100%);">
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->no_batch }}</td>
-                                            <td>{{ $item->berat_produk[0] }}</td>
-                                            <td>{{ $item->total_produk[0] }}</td>
-                                            <td>{{ $item->kategori_byproduk?->nama_produk }}</td>
-                                            <td>{{ $item->penerimaan?->tgl_penerimaan
-                                                ? \Carbon\Carbon::parse($item->penerimaan->tgl_penerimaan)->format('d F Y')
-                                                : 'N/A' }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     </div>
 @endsection

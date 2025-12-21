@@ -8,31 +8,27 @@ use App\Models\Supplier;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use App\Models\Grade;
 
 
-class CuttingController extends Controller// Mengubah nama controller menjadi CuttingController
-
+class CuttingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $cutting = Cutting::all();
         $penerimaan_ikan = PenerimaanIkan::all();
         $suppliers = Supplier::all();
         $selectedSupplier = null;
 
         return view('admin.transaksi.cutting', [
-            'cutting' => $cutting,
             'penerimaan_ikan' => $penerimaan_ikan,
             'suppliers' => $suppliers,
             'selectedSupplier' => $selectedSupplier
         ]);
     }
 
-// PDF Cutting
+    // PDF Cutting
     public function cuttingPdf(Request $request)
     {
         $filterMonth = $request->input('filterMonth');
@@ -97,6 +93,8 @@ class CuttingController extends Controller// Mengubah nama controller menjadi Cu
 
         $cutting->update($data);
 
-        return redirect()->route('cutting.index')->with('success', 'Cutting berhasil diperbarui.'); // Mengubah route redirect menjadi 'cutting.index'
+        return redirect()
+            ->route('cutting.index')
+            ->with('success', 'Cutting berhasil diperbarui.');
     }
 }

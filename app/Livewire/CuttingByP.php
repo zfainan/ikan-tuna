@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\Cutting;
 use App\Models\PenerimaanIkan;
-use App\Models\Supplier;
 use App\Models\KategoriByprodukCt;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -12,20 +11,18 @@ use Illuminate\Support\Facades\Log;
 
 class CuttingByP extends Component
 {
-
-    // Properti untuk form input dan filter
-    public $cuttings = [];                      //tabel cutting
+    public $cuttings = [];
     public $session_tgl_cutting;
     public $session_tgl_injek_co;
     public $total_berat = [];
     public $total_pcs = [];
-    public $penerimaan_ikan;                    //tabel penerimaan
+    public $penerimaan_ikan;
     public $penerimaan_id;
     public $selectedTanggalPenerimaan;
     public $filteredPenerimaan = [];
     public $suppliers = [];
     public $selectedSupplier;
-    public $kategori_byproduk_ct = [];          //tabel produk
+    public $kategori_byproduk_ct = [];
     public $selectedKategoriByproduk = [
         1 => null,
         2 => null,
@@ -317,7 +314,9 @@ class CuttingByP extends Component
             }
 
             if (!$hasValidData) {
-                throw new \Exception('Tidak ada data yang akan disimpan. Pastikan Anda telah mengisi minimal satu data produk.');
+                throw new \Exception(
+                    'Tidak ada data yang akan disimpan. Pastikan Anda telah mengisi minimal satu data produk.'
+                );
             }
 
             DB::beginTransaction();
@@ -376,14 +375,15 @@ class CuttingByP extends Component
             }
 
             if ($savedCount === 0) {
-                throw new \Exception('Tidak ada data yang berhasil disimpan. Pastikan Anda telah mengisi data dengan benar.');
+                throw new \Exception(
+                    'Tidak ada data yang berhasil disimpan. Pastikan Anda telah mengisi data dengan benar.'
+                );
             }
 
             DB::commit();
 
             session()->flash('message', 'Data berhasil disimpan');
-            $this->loadData(); // Memuat ulang data setelah disimpan
-
+            $this->loadData();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saat menyimpan data cutting: ' . $e->getMessage());

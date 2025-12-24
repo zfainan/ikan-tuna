@@ -247,8 +247,8 @@
                         </tr>
                         <tr>
                             <th colspan="3" style="width: 30px;">Cutting</th>
-                            <th colspan="3" style="width: 30px;">RM Service</th>
-                            <th colspan="3" style="width: 30px;">Hasil Service</th>
+                            <th colspan="3" style="width: 30px;">Loin RM Service</th>
+                            <th colspan="3" style="width: 30px;">Hasil Hasil RM Service</th>
                         </tr>
                         <tr>
 

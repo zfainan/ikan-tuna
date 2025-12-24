@@ -185,8 +185,8 @@
 
                         <tr>
                             <th colspan="3">Loin</th>
-                            <th colspan="3">RM Service</th>
-                            <th colspan="3">Hasil Service</th>
+                            <th colspan="3">Loin RM Service</th>
+                            <th colspan="3">Hasil Loin RM Service</th>
                         </tr>
 
                         {{-- HEADER GRADE --}}

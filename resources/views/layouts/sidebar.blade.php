@@ -4,22 +4,19 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="logo">
                     <a href="/admin">
-                        <img src="{{ asset('img/Logo.png') }}" alt="Logo" srcset="">
+                        <img src="{{ asset('img/Logo.png') }}" alt="Logo" srcset=""
+                            style="object-fit: contain; height: 150px; width: 150px;">
                     </a>
                 </div>
 
-                <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                            xmlns:xlink="http://www.w3.org/1999/xlink"
-                            aria-hidden="true" 
-                            role="img" 
-                            class="iconify iconify--system-uicons" 
-                            width="20"
-                            height="20" 
-                            preserveAspectRatio="xMidYMid meet" 
-                            viewBox="0 0 21 21">
-                        <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round"stroke-linejoin="round">
-                            <path d="M10.5 14.5c2.219 0 4-1.763 4-3.982a4.003 4.003 0 0 0-4-4.018c-2.219 0-4 1.781-4 4c0 2.219 1.781 4 4 4zM4.136 4.136L5.55 5.55m9.9 9.9l1.414 1.414M1.5 10.5h2m14 0h2M4.135 16.863L5.55 15.45m9.899-9.9l1.414-1.415M10.5 19.5v-2m0-14v-2"
+                <div class="theme-toggle d-flex align-items-center mt-2 gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        aria-hidden="true" role="img" class="iconify iconify--system-uicons" width="20"
+                        height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 21 21">
+                        <g fill="none" fill-rule="evenodd" stroke="currentColor"
+                            stroke-linecap="round"stroke-linejoin="round">
+                            <path
+                                d="M10.5 14.5c2.219 0 4-1.763 4-3.982a4.003 4.003 0 0 0-4-4.018c-2.219 0-4 1.781-4 4c0 2.219 1.781 4 4 4zM4.136 4.136L5.55 5.55m9.9 9.9l1.414 1.414M1.5 10.5h2m14 0h2M4.135 16.863L5.55 15.45m9.899-9.9l1.414-1.415M10.5 19.5v-2m0-14v-2"
                                 opacity=".3">
                             </path>
                             <g transform="translate(-210 -1)">
@@ -31,7 +28,7 @@
                     </svg>
 
                     <div class="form-check form-switch fs-6">
-                        <input class="form-check-input  me-0" type="checkbox" id="toggle-dark" style="cursor: pointer">
+                        <input class="form-check-input me-0" type="checkbox" id="toggle-dark" style="cursor: pointer">
                         <label class="form-check-label"></label>
                     </div>
 
@@ -44,140 +41,125 @@
                     </svg>
                 </div>
 
-                <div class="sidebar-toggler  x">
+                <div class="sidebar-toggler x">
                     <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
                 </div>
             </div>
         </div>
 
         <div class="sidebar-menu">
-            <ul class="menu">
+            <ul class="menu" style="margin-top: -30px;">
                 <li class="sidebar-title">Menu</li>
                 @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
-                <li class="sidebar-item {{ Request::is('admin') ? 'active' : '' }} ">
-                    <a href="/admin" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                    <li class="sidebar-item {{ Request::is('admin') ? 'active' : '' }}">
+                        <a href="/admin" class='sidebar-link'>
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
                 @else
-                <li class="sidebar-item {{ Request::is('karyawan') ? 'active' : '' }} ">
-                    <a href="/karyawan" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                    <li class="sidebar-item {{ Request::is('karyawan') ? 'active' : '' }}">
+                        <a href="/karyawan" class='sidebar-link'>
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
                 @endif
 
-                {{-- @if(Auth::user()->role_id == 1)
-                <li class="sidebar-item {{ Request::is('akun') ? 'active' : '' }}">
-                    <a href="/akun" class='sidebar-link'>
-                        <i class="bi bi-people-fill"></i>
-                        <span>Akun</span>
-                    </a>
-                </li>
+                @if (Auth::user()->role_id == 1)
+                    <li class="sidebar-item has-sub {{ Request::is('akun') || Request::is('suppliers') || Request::is('grade') || Request::is('kategori_berat_penerimaan') || Request::is('gradel') || Request::is('grade_service') || Request::is('grade_hservice') || Request::is('kategori-byproduk-ct') || Request::is('kategori-produk') ? 'active' : '' }}">
+                        <a href="#" class='sidebar-link'>
+                            <i class="bi bi-database-fill"></i>
+                            <span>Data Master</span>
+                        </a>
 
-                <li class="sidebar-item {{ Request::is('supplier') ? 'active' : '' }}">
-                    <a href="/supplier" class='sidebar-link'>
-                        <i class="bi bi-house-add"></i>
-                        <span>Supplier</span>
-                    </a>
-                </li>
-                @endif --}}
+                        <ul class="submenu">
+                            <li class="submenu-item {{ Request::is('akun') ? 'active' : '' }}">
+                                <a href="/akun" class="submenu-link">Account</a>
+                            </li>
 
-                @if(Auth::user()->role_id == 1)
-                <li class="sidebar-item  has-sub">
-                    <a href="#" class='sidebar-link'>
-                        <i class="bi bi-database-fill"></i>
-                        <span>Data Master</span>
-                    </a>
+                            <li class="submenu-item {{ Request::is('suppliers') ? 'active' : '' }}">
+                                <a href="/suppliers" class="submenu-link">Supplier</a>
+                            </li>
 
-                    <ul class="submenu ">
-                        <li class="submenu-item  {{ Request::is('akun') ? 'active' : '' }}">
-                            <a href="/akun" class="submenu-link">Account</a>
-                        </li>
+                            <li class="submenu-item {{ Request::is('grade') ? 'active' : '' }}">
+                                <a href="/grade" class="submenu-link">Grading Penerimaan</a>
+                            </li>
 
-                        <li class="submenu-item  {{ Request::is('suppliers') ? 'active' : '' }}">
-                            <a href="/suppliers" class="submenu-link">Supplier</a>
-                        </li>
+                            <li class="submenu-item {{ Request::is('kategori_berat_penerimaan') ? 'active' : '' }}">
+                                <a href="/kategori_berat_penerimaan" class="submenu-link">Sizing Penerimaan</a>
+                            </li>
 
-                        <li class="submenu-item {{ Request::is('grade') ? 'active' : '' }} ">
-                            <a href="/grade" class="submenu-link">Grading Penerimaan</a>
-                        </li>
+                            <li class="submenu-item {{ Request::is('gradel') ? 'active' : '' }}">
+                                <a href="/gradel" class="submenu-link">Grade/Sizing Loin</a>
+                            </li>
 
-                        <li class="submenu-item {{ Request::is('kategori_berat_penerimaan') ? 'active' : '' }} ">
-                            <a href="/kategori_berat_penerimaan" class="submenu-link">Sizing Penerimaan</a>
-                        </li>
+                            <li class="submenu-item {{ Request::is('grade_service') ? 'active' : '' }}">
+                                <a href="/grade_service" class="submenu-link">Grading RM Service</a>
+                            </li>
 
-                        <li class="submenu-item {{ Request::is('gradel') ? 'active' : '' }} ">
-                            <a href="/gradel" class="submenu-link">Grade/Sizing Loin</a>
-                        </li>
+                            <li class="submenu-item {{ Request::is('grade_hservice') ? 'active' : '' }}">
+                                <a href="/grade_hservice" class="submenu-link">Grade/Sizing Service</a>
+                            </li>
 
-                        <li class="submenu-item {{ Request::is('grade_service') ? 'active' : '' }} ">
-                            <a href="/grade_service" class="submenu-link">Grading RM Service</a>
-                        </li>
+                            <li class="submenu-item {{ Request::is('kategori-byproduk-ct') ? 'active' : '' }}">
+                                <a href="/kategori-byproduk-ct" class="submenu-link">By Produk</a>
+                            </li>
 
-                        <li class="submenu-item {{ Request::is('grade_hservice') ? 'active' : '' }} ">
-                            <a href="/grade_hservice" class="submenu-link">Grade/Sizing Service</a>
-                        </li>
-
-                        <li class="submenu-item {{ Request::is('kategori_byproduk_ct') ? 'active' : '' }} ">
-                            <a href="/kategori-byproduk-ct" class="submenu-link">By Produk</a>
-                        </li>
-
-                        <li class="submenu-item {{ Request::is('kategori_produk') ? 'active' : '' }} ">
-                            <a href="/kategori-produk" class="submenu-link">Produk</a>
-                        </li>
-                    </ul>
-                </li>
+                            <li class="submenu-item {{ Request::is('kategori-produk') ? 'active' : '' }}">
+                                <a href="/kategori-produk" class="submenu-link">Produk</a>
+                            </li>
+                        </ul>
+                    </li>
                 @endif
-                <li class="sidebar-item  has-sub">
+                <li
+                    class="sidebar-item has-sub {{ Request::is('penerimaan_ikan') || Request::is('cutting') || Request::is('cuttingl') || Request::is('servicel') || Request::is('service') || Request::is('packings') ? 'active' : '' }}">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Proses Produksi</span>
                     </a>
 
-                    <ul class="submenu ">
-                        <li class="submenu-item  {{ Request::is('penerimaan_ikan') ? 'active' : '' }}">
+                    <ul class="submenu">
+                        <li class="submenu-item {{ Request::is('penerimaan_ikan') ? 'active' : '' }}">
                             <a href="/penerimaan_ikan" class="submenu-link">Ikan Masuk</a>
                         </li>
 
-                        <li class="submenu-item  {{ Request::is('cutting') ? 'active' : '' }}">
+                        <li class="submenu-item {{ Request::is('cutting') ? 'active' : '' }}">
                             <a href="/cutting" class="submenu-link">Cutting by Produk</a>
                         </li>
 
-                        <li class="submenu-item  {{ Request::is('cuttingl') ? 'active' : '' }}">
-                            <a href="/cuttingl" class="submenu-link">Cutting by Loin</a>
+                        <li class="submenu-item {{ Request::is('cuttingl') ? 'active' : '' }}">
+                            <a href="/cuttingl" class="submenu-link">Cutting by Loin RM</a>
                         </li>
 
-                        <li class="submenu-item  {{ Request::is('servicel') ? 'active' : '' }}">
-                            <a href="/servicel" class="submenu-link">Service by Loin</a>
+                        <li class="submenu-item {{ Request::is('servicel') ? 'active' : '' }}">
+                            <a href="/servicel" class="submenu-link">Service by Loin CCM</a>
                         </li>
 
-                        <li class="submenu-item  {{ Request::is('service') ? 'active' : '' }}">
+                        <li class="submenu-item {{ Request::is('service') ? 'active' : '' }}">
                             <a href="/service" class="submenu-link">Service by Produk</a>
                         </li>
 
-                        <li class="submenu-item  {{ Request::is('packings') ? 'active' : '' }}">
+                        <li class="submenu-item {{ Request::is('packings') ? 'active' : '' }}">
                             <a href="/packings" class="submenu-link">Packing</a>
                         </li>
                     </ul>
                 </li>
 
-                @if(Auth::user()->role_id == 1)
-                <li class="sidebar-item  has-sub">
-                    <a href="#" class='sidebar-link'>
-                        <i class="bi bi-collection-fill"></i>
-                        <span>Laporan</span>
-                    </a>
+                @if (Auth::user()->role_id == 1)
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="bi bi-collection-fill"></i>
+                            <span>Laporan</span>
+                        </a>
 
-                    <ul class="submenu ">
+                        <ul class="submenu">
 
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
                 @endif
 
-                <li class="sidebar-item  ">
+                <li class="sidebar-item">
                     <a href="/logout" class='sidebar-link'>
                         <i class="bi bi-box-arrow-left"></i>
                         <span>Logout</span>

@@ -22,7 +22,7 @@ class LoginController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-            'captcha' => ['required', 'captcha'],
+            // 'captcha' => ['required', 'captcha'],
         ]);
 
         $credentials = $request->only('email', 'password');

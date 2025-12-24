@@ -67,20 +67,6 @@
                                     <i class="bi bi-shield-lock"></i>
                                 </div>
                             </div>
-                            {{-- <div class="form-group position-relative has-icon-left mb-4">
-                                <div class="captcha">
-                                    <span>{!! captcha_img('math') !!}</span>
-                                    <button type="button" class="btn btn-danger reload"
-                                        id="reload">&#x21bb;</button>
-                                </div>
-                                <input type="text" name="captcha"
-                                    class="form-control @error('captcha') is-invalid @enderror mt-2"
-                                    placeholder="Masukan Captcha">
-                                @error('captcha')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div> --}}
-
                             <button type="submit" class="btn btn-primary btn-block btn-lg mt-5 shadow-lg">Log
                                 in</button>
                         </form>
@@ -121,19 +107,6 @@
 
         </div>
         <script src="{{ asset('dist/assets/extensions/jquery/jquery.min.js') }}"></script>
-
-        <script>
-            $('#reload').click(function() {
-                $.ajax({
-                    type: "GET",
-                    url: "reload-captcha",
-                    success: function(data) {
-                        $(".captcha span").html(data.captcha);
-                    }
-                });
-            });
-        </script>
-
     </body>
 
 </html>

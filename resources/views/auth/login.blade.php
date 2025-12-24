@@ -13,9 +13,7 @@
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=BBH+Bartle&family=League           +Spartan:wght@100..900&display=swap"
-            rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
     </head>
 
     <body>
@@ -67,8 +65,7 @@
                                     <i class="bi bi-shield-lock"></i>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block btn-lg mt-5 shadow-lg">Log
-                                in</button>
+                            <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg">Login</button>
                         </form>
                     </div>
                 </div>
@@ -104,9 +101,7 @@
                     </div>
                 </div>
             </div>
-
         </div>
-        <script src="{{ asset('dist/assets/extensions/jquery/jquery.min.js') }}"></script>
     </body>
 
 </html>

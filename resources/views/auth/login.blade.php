@@ -71,31 +71,41 @@
                 </div>
                 <div class="col-lg-8 d-none d-lg-block">
                     <div id="auth-right" class="flex h-full items-center p-4">
-                        <div class="space-y-5 p-6 text-white" style="max-width: 600px; margin: auto;">
+                        <div class="space-y-5 p-6 text-white" style="max-width: 820px; margin: auto;">
                             <!-- Company Title -->
                             <div class="d-flex justify-content-center mb-4">
                                 <img src="{{ asset('img/logo-white.png') }}" alt="Logo"
-                                    style="object-fit: contain; height: auto; width: 250px;">
+                                    style="object-fit: contain; height: auto; width: 200px;">
                             </div>
 
                             <!-- Tujuan -->
                             <div>
                                 <h5 class="text-lg font-semibold text-white text-center">Tujuan</h5>
-                                <ul class="mt-2 list-inside list-disc space-y-1 text-sm text-white/80">
-                                    <li>Mengembangkan produk digital yang mudah digunakan dan andal</li>
-                                    <li>Membantu bisnis beradaptasi dengan transformasi teknologi</li>
-                                    <li>Mengutamakan keamanan, performa, dan kepuasan pengguna</li>
-                                </ul>
+                                <ol type="a" class="mt-2 list-inside list-[lower-alpha] space-y-1 text-sm text-white/80" style="text-align: justify;">
+                                    <li>Create awarenes at all levels of management, staff and employess about the importance of the quality management system according to the standart of food safety.</li>
+                                        <i>Menciptakan kesadaran di semua level manajemen, staff dan karyawan tentang pentingnya sistem manajemen kualitas.</i>
+                                    <li>Creating a system of the quality management system.</li>
+                                        <i>Menciptakan sebuah sistem manajemen kualitas sesuai dengan standar keamanan.</i>
+                                    <li>Ensure the implementation and monitoring of  quality management system.</li>
+                                        <i>Menjamin terlaksananya dan pemantauan sistem manajemen kualitas.</i>
+                                    <li>Provide security, legality and quality of products to consumers.</li>
+                                        <i>Menyediakan keamanan legalitas dan kualitas produk untuk pelanggan.</i>
+                                </ol>
                             </div>
 
                             <!-- Target -->
                             <div>
                                 <h5 class="text-lg font-semibold text-white text-center">Target</h5>
-                                <ul class="mt-2 list-inside list-disc space-y-1 text-sm text-white/80">
-                                    <li>UMKM dan perusahaan yang ingin meningkatkan efisiensi operasional</li>
-                                    <li>Bisnis yang membutuhkan otomasi dan sistem digital terintegrasi</li>
-                                    <li>Organisasi yang ingin meningkatkan kualitas layanan pelanggan</li>
-                                </ul>
+                                <ol type="a" class="mt-2 list-inside list-[lower-alpha] space-y-1 text-sm text-white/80" style="text-align: justify">
+                                    <li>The whole range of manager, staff and employess, to explain and understand the importance of the implementation of the quality management system, according to the position and responsibilities of each.</li>
+                                        <i>Seluruh manajer, staff dan karyawan, untuk menjelaskan dan paham pentingnya melaksanakan sistem manajemen kualitas sesuai dengan posisi dan tanggung jawabnya masing-masing.</i>
+                                    <li>Availability of all manuals and suspporting documents necessary to implement the quality management system according to the standard of food safety.</li>
+                                        <i>Tersedianya semua panduan dan dokumen pendukung yang diperlukan untuk melaksanakan sistem manajemen kualitas sesuai dengan standar keamanan.</i>
+                                    <li>All levels of management, staff and employess to consistenly implement all  requirements and standards required, both practice and documentation, of all cluases that are in the quality management system according to the standard of food safety.</li>
+                                        <i>Semua level manajemen, staff dan karyawan untuk melaksanakan secara konsisten semua persyaratan dan standar yang ada, kedua praktek dan dokumen, semua pasal yang terdapat didalam sistem manajemen kualitas sesuai dengan standar keamanan.</i>
+                                    <li>Able to demonstrate the implementation and all documentation to the auditor or the consumer a complete and transparent when requested at any time.</li>
+                                        <i>Mampu menyajikan pelaksanaan dan semua dokumen kepada auditor atau pelanggan secara lengkap dan transparan ketikan diminta kapanpun.</i>
+                                </ol>
                             </div>
                         </div>
                     </div>

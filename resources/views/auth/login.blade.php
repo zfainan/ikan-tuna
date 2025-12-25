@@ -29,7 +29,7 @@
                                     style="object-fit: contain; height: auto; width: 250px;">
                             </a>
                         </div>
-                        <p class="auth-subtitle mb-4">Masukan username dan password
+                        <p class="auth-subtitle mb-2">Masukan username dan password
 
                             <!-- Display validation errors -->
                             @if ($errors->any())
@@ -48,24 +48,31 @@
                                     {{ Session::get('login') }}
                                 </div>
                             @endif
+                        <style>
+                            .small-input {
+                                height: 38px;
+                                font-size: 14px;
+                                padding: 6px 10px;
+                            }
+                        </style>
 
                         <form action="{{ route('login.store') }}" method="POST">
                             @csrf
-                            <div class="form-group position-relative has-icon-left mb-4">
-                                <input type="email" class="form-control form-control-xl" name="email"
+                            <div class="form-group position-relative has-icon-left mb-3">
+                                <input type="email" class="form-control small-input" name="email"
                                     placeholder="e-mail" value="{{ old('email') }}" required>
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
                             </div>
-                            <div class="form-group position-relative has-icon-left mb-4">
-                                <input type="password" class="form-control form-control-xl" name="password"
+                            <div class="form-group position-relative has-icon-left mb-3">
+                                <input type="password" class="form-control small-input" name="password"
                                     placeholder="Password" required>
                                 <div class="form-control-icon">
                                     <i class="bi bi-shield-lock"></i>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg">Login</button>
+                            <button type="submit" class="btn btn-primary btn-block shadow-lg">Login</button>
                         </form>
                     </div>
                 </div>

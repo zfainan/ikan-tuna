@@ -19,8 +19,8 @@
                     <div class="col-12 col-md-6 order-md-2 order-first">
                         <nav aria-label="breadcrumb" class="breadcrumb-header float-lg-end float-start">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ Request::segment(1) }}</li>
+                                <li class="breadcrumb-item"><a href="index.html" style="font-weight: bold;">Dashboard</a></li>
+                                <li class="breadcrumb-item active" aria-current="page" style="font-weight: bold;">{{ Request::segment(1) }}</li>
                             </ol>
                         </nav>
                     </div>

@@ -9,7 +9,6 @@ class Cutting extends Model
 {
     use HasFactory;
 
-    protected $table = 'cuttings';
     protected $primaryKey = 'cutting_id';
     public $incrementing = true;
     public $timestamps = true;

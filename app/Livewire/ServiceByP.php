@@ -11,20 +11,18 @@ use Illuminate\Support\Facades\Log;
 
 class ServiceByP extends Component
 {
-
-    // Properti untuk form input dan filter
     public $services = [];
     public $session_tgl_service;
     public $session_tgl_injek_co;
     public $total_berat = [];
     public $total_pcs = [];
-    public $penerimaan_ikan;                    //tabel penerimaan
+    public $penerimaan_ikan;
     public $penerimaan_id;
     public $selectedTanggalPenerimaan;
     public $filteredPenerimaan = [];
     public $suppliers = [];
     public $selectedSupplier;
-    public $kategori_byproduk_ct = [];          //tabel produk
+    public $kategori_byproduk_ct = [];
     public $selectedKategoriByproduk = [
         1 => null,
         2 => null,
@@ -165,8 +163,6 @@ class ServiceByP extends Component
                 for ($i = 1; $i <= 7; $i++) {
                     $row['berat_produk' . $i] = null;
                     $row['total_produk' . $i] = null;
-                    // Inisialisasi kategori yang dipilih
-                    $this->selectedKategoriByproduk[$i] = null;
                 }
 
                 // Isi data produk
@@ -177,7 +173,121 @@ class ServiceByP extends Component
                         $row['total_produk' . $urutan] = $produk['total'];
 
                         // Set selectedKategoriByproduk untuk dropdown
-                        $this->selectedKategoriByproduk[$urutan] = $produk['kategori_id'];
+                        if ($produk['kategori_id']) {
+                            $this->selectedKategoriByproduk[$urutan] = $produk['kategori_id'];
+                        }
+                    }
+                }
+
+                $formattedRows[] = $row;
+            }
+
+            $this->rows = $formattedRows;
+
+            // Jika tidak ada data, tambahkan baris kosong
+            if (empty($this->rows)) {
+                for ($i = 1; $i <= 7; $i++) {
+                    $this->selectedKategoriByproduk[$i] = null;
+                }
+                $this->addRow();
+            }
+
+            // Debug: Tampilkan data yang akan dikirim ke view
+            Log::info('Data yang akan ditampilkan:', $this->rows);
+        } catch (\Exception $e) {
+            Log::error('Error loading data: ' . $e->getMessage());
+            session()->flash('error', 'Gagal memuat data: ' . $e->getMessage());
+        }
+    }
+
+    public function reloadRowsWithkategoriData()
+    {
+        try {
+            $this->rows = [];
+
+            // Ambil data dari database
+            $query = Service::with(['kategori_byproduk', 'penerimaan']);
+
+            // Filter berdasarkan form input
+            if ($this->penerimaan_id) {
+                $query->where('penerimaan_id', $this->penerimaan_id);
+            }
+
+            if ($this->session_tgl_service) {
+                $query->where('tgl_service', $this->session_tgl_service);
+            }
+
+            if ($this->session_tgl_injek_co) {
+                $query->where('tgl_injek_co', $this->session_tgl_injek_co);
+            }
+
+            // Ambil data dan urutkan berdasarkan no_batch dan kategori
+            $services = $query->orderBy('no_batch')
+                ->orderBy('kategori_byproduk_id')
+                ->whereIn('kategori_byproduk_id', array_values(
+                    array_filter($this->selectedKategoriByproduk)
+                ))
+                ->get();
+
+            // Kelompokkan data berdasarkan no_batch
+            $groupedData = [];
+
+            foreach ($services as $service) {
+                $noBatch = $service->no_batch;
+
+                if (!isset($groupedData[$noBatch])) {
+                    $groupedData[$noBatch] = [
+                        'no_batch' => $noBatch,
+                        'tgl_service' => $service->tgl_service,
+                        'tgl_injek_co' => $service->tgl_injek_co,
+                        'produk' => []
+                    ];
+                }
+
+                // Pastikan nilai berat dan total adalah single value, bukan array
+                $berat = is_array($service->berat_produk) ? $service->berat_produk[0] : $service->berat_produk;
+                $total = is_array($service->total_produk) ? $service->total_produk[0] : $service->total_produk;
+
+                // Tambahkan data produk
+                $groupedData[$noBatch]['produk'][] = [
+                    'kategori_id' => $service->kategori_byproduk_id,
+                    'nama' => $service->kategori_byproduk->nama_produk ?? 'Produk Tidak Diketahui',
+                    'berat' => (float) $berat,
+                    'total' => (int) $total
+                ];
+            }
+
+            // Format data sesuai yang diharapkan view
+            $formattedRows = [];
+
+            foreach ($groupedData as $batch) {
+                $row = [
+                    'no_batch' => $batch['no_batch'],
+                    'tgl_service' => $batch['tgl_service'],
+                    'tgl_injek_co' => $batch['tgl_injek_co']
+                ];
+
+                // Inisialisasi semua kolom produk
+                for ($i = 1; $i <= 7; $i++) {
+                    $row['berat_produk' . $i] = null;
+                    $row['total_produk' . $i] = null;
+                }
+
+                // Isi data produk
+                foreach ($batch['produk'] as $index => $produk) {
+                    // get index
+                    $idxs = array_filter(
+                        $this->selectedKategoriByproduk,
+                        fn($val) => $val == $produk['kategori_id'],
+                    );
+
+                    if (!empty($idxs)) {
+                        foreach ($idxs as $index => $val) {
+                            if ($index <= 7) {
+                                $row['berat_produk' . ($index)] = $produk['berat'];
+                                $row['total_produk' . ($index)] = $produk['total'];
+                            }
+                        }
                     }
                 }
 
@@ -190,9 +300,6 @@ class ServiceByP extends Component
             if (empty($this->rows)) {
                 $this->addRow();
             }
-
-            // Debug: Tampilkan data yang akan dikirim ke view
-            Log::info('Data yang akan ditampilkan:', $this->rows);
         } catch (\Exception $e) {
             Log::error('Error loading data: ' . $e->getMessage());
             session()->flash('error', 'Gagal memuat data: ' . $e->getMessage());
@@ -219,9 +326,6 @@ class ServiceByP extends Component
         }
         $this->penerimaan_id = null;
     }
-    //memuat data- data yang ada pada penerimaan ikan
-
-    //add, update, remove row
 
     public function addRow()
     {
@@ -316,7 +420,9 @@ class ServiceByP extends Component
             }
 
             if (!$hasValidData) {
-                throw new \Exception('Tidak ada data yang akan disimpan. Pastikan Anda telah mengisi minimal satu data produk.');
+                throw new \Exception(
+                    'Tidak ada data yang akan disimpan. Pastikan Anda telah mengisi minimal satu data produk.'
+                );
             }
 
             DB::beginTransaction();
@@ -325,6 +431,9 @@ class ServiceByP extends Component
             Service::where('tgl_service', $this->session_tgl_service)
                 ->where('tgl_injek_co', $this->session_tgl_injek_co)
                 ->where('penerimaan_id', $this->penerimaan_id)
+                ->whereIn('kategori_byproduk_id', array_values(
+                    array_filter($this->selectedKategoriByproduk)
+                ))
                 ->delete();
 
             $savedCount = 0;
@@ -375,14 +484,15 @@ class ServiceByP extends Component
             }
 
             if ($savedCount === 0) {
-                throw new \Exception('Tidak ada data yang berhasil disimpan. Pastikan Anda telah mengisi data dengan benar.');
+                throw new \Exception(
+                    'Tidak ada data yang berhasil disimpan. Pastikan Anda telah mengisi data dengan benar.'
+                );
             }
 
             DB::commit();
 
             session()->flash('message', 'Data berhasil disimpan');
-            $this->loadData(); // Memuat ulang data setelah disimpan
-
+            $this->loadData();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saat menyimpan data service: ' . $e->getMessage());

@@ -163,8 +163,6 @@ class CuttingByP extends Component
                 for ($i = 1; $i <= 7; $i++) {
                     $row['berat_produk' . $i] = null;
                     $row['total_produk' . $i] = null;
-                    // Inisialisasi kategori yang dipilih
-                    $this->selectedKategoriByproduk[$i] = null;
                 }
 
                 // Isi data produk
@@ -175,7 +173,9 @@ class CuttingByP extends Component
                         $row['total_produk' . $urutan] = $produk['total'];
 
                         // Set selectedKategoriByproduk untuk dropdown
-                        $this->selectedKategoriByproduk[$urutan] = $produk['kategori_id'];
+                        if ($produk['kategori_id']) {
+                            $this->selectedKategoriByproduk[$urutan] = $produk['kategori_id'];
+                        }
                     }
                 }
 
@@ -186,6 +186,9 @@ class CuttingByP extends Component
 
             // Jika tidak ada data, tambahkan baris kosong
             if (empty($this->rows)) {
+                for ($i = 1; $i <= 7; $i++) {
+                    $this->selectedKategoriByproduk[$i] = null;
+                }
                 $this->addRow();
             }
 

@@ -226,7 +226,7 @@
                                 <th colspan="2">
                                     <select wire:model.live="selectedKategori{{ $i }}"
                                         class="excel-input @error('selectedKategori' . $i) is-invalid @enderror"
-                                        style="font-size:.8rem; height:30px; background-color:rgb(121, 173, 246);">
+                                        style="font-size:.8rem; height:30px; background-color:rgb(121, 173, 246);" wire:change="loadData">
                                         <option value="" class="text-center" style="font-weight: bold;">-- Produk
                                             --</option>
                                         @foreach ($kategori_produk as $produk)

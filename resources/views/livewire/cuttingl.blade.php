@@ -172,7 +172,7 @@
                             <th rowspan="5">No</th>
                             <th colspan="9">
                                 <input type="text" id="no_batch" wire:model.live="noBatch" wire:change="loadData"
-                                    wire:key="no_batch_{{ rand() }}" class="excel-input text-center"
+                                    class="excel-input text-center"
                                     placeholder="No Batch"
                                     style="background-color:rgb(121, 173, 246); font-weight: bold; font-size: 0.8rem;"
                                     required>
@@ -194,8 +194,11 @@
                             <th colspan="3">
                                 <select wire:model.live="selectedSizingLoin"
                                     style="font-size: .8rem; height: 30px; background-color:rgb(121, 173, 246);"
-                                    class="excel-input">
-                                    <option value="{{ null }}" class="text-center" style="font-weight: bold;">-- Size/Grade --</option>
+                                    class="excel-input"
+                                    wire:change="loadDataByHeader">
+                                    <option value="{{ null }}" class="text-center" style="font-weight: bold;">
+                                        -- Size/Grade --
+                                    </option>
                                     @foreach ($sizingLoin as $s)
                                         <option class="text-center" value="{{ $s->grade_size_id }}">
                                             {{ $s->grade_sizing }}

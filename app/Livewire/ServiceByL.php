@@ -46,8 +46,8 @@ class ServiceByL extends Component
     {
         $newRow = [];
         for ($i = 1; $i <= 7; $i++) {
-            $newRow['berat_produk' . $i] = 0;
-            $newRow['total_produk' . $i] = 0;
+            $newRow['berat_produk' . $i] = null;
+            $newRow['total_produk' . $i] = null;
         }
         $this->rows[] = $newRow;
         $this->calculateTotals();

@@ -256,11 +256,13 @@
                                 <td>
                                     <input type="number" step="0.01"
                                         wire:model.live="rows.{{ $index }}.berat_loin"
+                                        placeholder="Kg"
                                         class="excel-input text-center">
                                 </td>
                                 <td>
                                     <input type="number" step="0.1"
                                         wire:model.live="rows.{{ $index }}.suhu_loin"
+                                        placeholder="°C"
                                         class="excel-input text-center">
                                 </td>
                                 <td>
@@ -273,6 +275,7 @@
                                     <td>
                                         <input type="number" step="0.01"
                                             wire:model.live="rows.{{ $index }}.rm_berat_{{ $i }}"
+                                            placeholder="Kg"
                                             class="excel-input text-center">
                                     </td>
                                 @endfor
@@ -282,6 +285,7 @@
                                     <td>
                                         <input type="number" step="0.01"
                                             wire:model.live="rows.{{ $index }}.hs_berat_{{ $i }}"
+                                            placeholder="Kg"
                                             class="excel-input text-center">
                                     </td>
                                 @endfor

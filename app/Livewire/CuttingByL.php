@@ -142,24 +142,24 @@ class CuttingByL extends Component
             'no_batch' => '',
             'grade_size_id' => null,
             'no_loin' => '',
-            'berat_loin' => 0,
-            'suhu_loin' => 0,
+            'berat_loin' => null,
+            'suhu_loin' => null,
 
             // RM
             'rm_grade_1' => null,
             'rm_grade_2' => null,
             'rm_grade_3' => null,
-            'rm_berat_1' => 0,
-            'rm_berat_2' => 0,
-            'rm_berat_3' => 0,
+            'rm_berat_1' => null,
+            'rm_berat_2' => null,
+            'rm_berat_3' => null,
 
             // HS
             'hs_grade_1' => null,
             'hs_grade_2' => null,
             'hs_grade_3' => null,
-            'hs_berat_1' => 0,
-            'hs_berat_2' => 0,
-            'hs_berat_3' => 0,
+            'hs_berat_1' => null,
+            'hs_berat_2' => null,
+            'hs_berat_3' => null,
         ];
     }
 

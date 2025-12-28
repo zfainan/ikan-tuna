@@ -98,44 +98,65 @@ class ServiceByL extends Component
         $data = ServiceL::where('tgl_service', $this->session_tgl_service)
             ->where('penerimaan_id', $this->penerimaan_id)
             ->where('cuttingl_id', $this->selectedCuttingByl)
+            ->whereIn('kategori_produk_id', [
+                $this->selectedKategori1,
+                $this->selectedKategori2,
+                $this->selectedKategori3,
+                $this->selectedKategori4,
+                $this->selectedKategori5,
+                $this->selectedKategori6,
+                $this->selectedKategori7,
+            ])
             ->get();
 
         if ($data->isEmpty()) {
             $this->rows = [];
             $this->addRow();
-            $this->selectedKategori1 = null;
-            $this->selectedKategori2 = null;
-            $this->selectedKategori3 = null;
-            $this->selectedKategori4 = null;
-            $this->selectedKategori5 = null;
-            $this->selectedKategori6 = null;
-            $this->selectedKategori7 = null;
-        } else {
-            $this->rows = $data->map(fn($c) => [
-                'berat_produk1' => $c->berat_1,
-                'total_produk1' => $c->pcs_1,
-                'berat_produk2' => $c->berat_2,
-                'total_produk2' => $c->pcs_2,
-                'berat_produk3' => $c->berat_3,
-                'total_produk3' => $c->pcs_3,
-                'berat_produk4' => $c->berat_4,
-                'total_produk4' => $c->pcs_4,
-                'berat_produk5' => $c->berat_5,
-                'total_produk5' => $c->pcs_5,
-                'berat_produk6' => $c->berat_6,
-                'total_produk6' => $c->pcs_6,
-                'berat_produk7' => $c->berat_7,
-                'total_produk7' => $c->pcs_7,
-            ])->toArray();
-            $first = $data->first();
-            $this->selectedKategori1 = $first->kategori_1;
-            $this->selectedKategori2 = $first->kategori_2;
-            $this->selectedKategori3 = $first->kategori_3;
-            $this->selectedKategori4 = $first->kategori_4;
-            $this->selectedKategori5 = $first->kategori_5;
-            $this->selectedKategori6 = $first->kategori_6;
-            $this->selectedKategori7 = $first->kategori_7;
+            $this->calculateTotals();
+            return;
         }
+
+        $groupedRows = [
+            $this->selectedKategori1 => [],
+            $this->selectedKategori2 => [],
+            $this->selectedKategori3 => [],
+            $this->selectedKategori4 => [],
+            $this->selectedKategori5 => [],
+            $this->selectedKategori6 => [],
+            $this->selectedKategori7 => [],
+        ];
+
+        $data->each(function ($c) use (&$groupedRows) {
+            $groupedRows[$c->kategori_produk_id][] = $c;
+        });
+
+        $this->rows = [];
+        $maxRows = max(array_map('count', $groupedRows));
+        for ($i = 0; $i < $maxRows; $i++) {
+            $newRow = [];
+            for ($j = 1; $j <= 7; $j++) {
+                $kategoriId = $this->{'selectedKategori' . $j};
+                if (isset($groupedRows[$kategoriId][$i])) {
+                    $service = $groupedRows[$kategoriId][$i];
+                    $newRow['berat_produk' . $j] = $service->berat_loin;
+                    $newRow['total_produk' . $j] = $service->pcs_loin;
+                } else {
+                    $newRow['berat_produk' . $j] = 0;
+                    $newRow['total_produk' . $j] = 0;
+                }
+            }
+            $this->rows[] = $newRow;
+        }
+
+        // remove emty rows
+        $this->rows = array_values(array_filter($this->rows, function ($row) {
+            for ($i = 1; $i <= 7; $i++) {
+                if (!empty($row['berat_produk' . $i]) || !empty($row['total_produk' . $i])) {
+                    return true;
+                }
+            }
+            return false;
+        }));
 
         $this->calculateTotals();
     }
@@ -178,42 +199,61 @@ class ServiceByL extends Component
             ServiceL::where('tgl_service', $this->session_tgl_service)
                 ->where('penerimaan_id', $this->penerimaan_id)
                 ->where('cuttingl_id', $this->selectedCuttingByl)
+                ->whereIn('kategori_produk_id', [
+                    $this->selectedKategori1,
+                    $this->selectedKategori2,
+                    $this->selectedKategori3,
+                    $this->selectedKategori4,
+                    $this->selectedKategori5,
+                    $this->selectedKategori6,
+                    $this->selectedKategori7,
+                ])
                 ->delete();
 
             foreach ($this->rows as $row) {
-                ServiceL::create([
-                    'tgl_service' => $this->session_tgl_service,
-                    'cuttingl_id' => $this->selectedCuttingByl,
-                    'penerimaan_id' => $this->penerimaan_id,
+                for ($i = 1; $i <= 7; $i++) {
+                    ServiceL::create([
+                        'tgl_service' => $this->session_tgl_service,
+                        'cuttingl_id' => $this->selectedCuttingByl,
+                        'penerimaan_id' => $this->penerimaan_id,
+                        'kategori_produk_id' => $this->{'selectedKategori' . $i},
+                        'berat_loin' => $row['berat_produk' . $i] ?? 0,
+                        'pcs_loin' => $row['total_produk' . $i] ?? 0,
+                    ]);
+                }
 
-                    // Col 1-7
-                    'kategori_1' => $this->selectedKategori1,
-                    'berat_1' => $row['berat_produk1'] ?? 0,
-                    'pcs_1' => $row['total_produk1'] ?? 0,
-                    'kategori_2' => $this->selectedKategori2,
-                    'berat_2' => $row['berat_produk2'] ?? 0,
-                    'pcs_2' => $row['total_produk2'] ?? 0,
-                    'kategori_3' => $this->selectedKategori3,
-                    'berat_3' => $row['berat_produk3'] ?? 0,
-                    'pcs_3' => $row['total_produk3'] ?? 0,
-                    'kategori_4' => $this->selectedKategori4,
-                    'berat_4' => $row['berat_produk4'] ?? 0,
-                    'pcs_4' => $row['total_produk4'] ?? 0,
-                    'kategori_5' => $this->selectedKategori5,
-                    'berat_5' => $row['berat_produk5'] ?? 0,
-                    'pcs_5' => $row['total_produk5'] ?? 0,
-                    'kategori_6' => $this->selectedKategori6,
-                    'berat_6' => $row['berat_produk6'] ?? 0,
-                    'pcs_6' => $row['total_produk6'] ?? 0,
-                    'kategori_7' => $this->selectedKategori7,
-                    'berat_7' => $row['berat_produk7'] ?? 0,
-                    'pcs_7' => $row['total_produk7'] ?? 0,
-                ]);
+                // ServiceL::create([
+                //     'tgl_service' => $this->session_tgl_service,
+                //     'cuttingl_id' => $this->selectedCuttingByl,
+                //     'penerimaan_id' => $this->penerimaan_id,
+                //     // Col 1-7
+                //     'kategori_1' => $this->selectedKategori1,
+                //     'berat_1' => $row['berat_produk1'] ?? 0,
+                //     'pcs_1' => $row['total_produk1'] ?? 0,
+                //     'kategori_2' => $this->selectedKategori2,
+                //     'berat_2' => $row['berat_produk2'] ?? 0,
+                //     'pcs_2' => $row['total_produk2'] ?? 0,
+                //     'kategori_3' => $this->selectedKategori3,
+                //     'berat_3' => $row['berat_produk3'] ?? 0,
+                //     'pcs_3' => $row['total_produk3'] ?? 0,
+                //     'kategori_4' => $this->selectedKategori4,
+                //     'berat_4' => $row['berat_produk4'] ?? 0,
+                //     'pcs_4' => $row['total_produk4'] ?? 0,
+                //     'kategori_5' => $this->selectedKategori5,
+                //     'berat_5' => $row['berat_produk5'] ?? 0,
+                //     'pcs_5' => $row['total_produk5'] ?? 0,
+                //     'kategori_6' => $this->selectedKategori6,
+                //     'berat_6' => $row['berat_produk6'] ?? 0,
+                //     'pcs_6' => $row['total_produk6'] ?? 0,
+                //     'kategori_7' => $this->selectedKategori7,
+                //     'berat_7' => $row['berat_produk7'] ?? 0,
+                //     'pcs_7' => $row['total_produk7'] ?? 0,
+                // ]);
             }
 
             DB::commit();
             session()->flash('message', 'Data berhasil disimpan');
-            $this->loadData();
+            // $this->loadData();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error($e->getMessage());

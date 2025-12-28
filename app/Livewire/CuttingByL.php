@@ -201,13 +201,34 @@ class CuttingByL extends Component
      * ======================= */
     public function loadData()
     {
+        $first = CuttingL::where('tggl_cutting', $this->session_tggl_cutting)
+            ->where('tggl_injek_co', $this->session_tggl_injek_co)
+            ->where('tggl_service', $this->session_tggl_service)
+            ->where('penerimaan_id', $this->penerimaan_id)
+            ->where('no_batch', $this->noBatch)
+            ->first();
+
         $query = CuttingL::where('tggl_cutting', $this->session_tggl_cutting)
             ->where('tggl_injek_co', $this->session_tggl_injek_co)
             ->where('tggl_service', $this->session_tggl_service)
-            ->where('penerimaan_id', $this->penerimaan_id);
+            ->where('penerimaan_id', $this->penerimaan_id)
+            ->where('no_batch', $this->noBatch);
 
-        if (!empty($this->noBatch)) {
-            $query->where('no_batch', $this->noBatch);
+        if ($first) {
+            $query->where('grade_size_id', $first->grade_size_id);
+            $this->selectedGradingService1 = $first->rm_grade_1;
+            $this->selectedGradingService2 = $first->rm_grade_2;
+            $this->selectedGradingService3 = $first->rm_grade_3;
+            $this->selectedGradingHService1 = $first->hs_grade_1;
+            $this->selectedGradingHService2 = $first->hs_grade_2;
+            $this->selectedGradingHService3 = $first->hs_grade_3;
+        } else {
+            $this->selectedGradingService1 = null;
+            $this->selectedGradingService2 = null;
+            $this->selectedGradingService3 = null;
+            $this->selectedGradingHService1 = null;
+            $this->selectedGradingHService2 = null;
+            $this->selectedGradingHService3 = null;
         }
 
         $data = $query->get();
@@ -234,6 +255,63 @@ class CuttingByL extends Component
             'hs_berat_2' => $c->hs_berat_2,
             'hs_berat_3' => $c->hs_berat_3,
         ])->toArray();
+
+        if (empty($this->rows)) {
+            $this->addRow();
+        }
+
+        $this->calculateTotals();
+    }
+
+    public function loadDataByHeader()
+    {
+        $data = CuttingL::where('tggl_cutting', $this->session_tggl_cutting)
+            ->where('tggl_injek_co', $this->session_tggl_injek_co)
+            ->where('tggl_service', $this->session_tggl_service)
+            ->where('penerimaan_id', $this->penerimaan_id)
+            ->where('no_batch', $this->noBatch)
+            ->where('grade_size_id', $this->selectedSizingLoin)
+            ->get();
+
+        $this->rows = $data->map(fn($c) => [
+            'cuttingl_id' => $c->cuttingl_id,
+            'no_batch' => $c->no_batch,
+            'grade_size_id' => $c->grade_size_id,
+            'no_loin' => $c->no_loin,
+            'berat_loin' => $c->berat_loin,
+            'suhu_loin' => $c->suhu_loin,
+
+            'rm_grade_1' => $c->rm_grade_1,
+            'rm_grade_2' => $c->rm_grade_2,
+            'rm_grade_3' => $c->rm_grade_3,
+            'rm_berat_1' => $c->rm_berat_1,
+            'rm_berat_2' => $c->rm_berat_2,
+            'rm_berat_3' => $c->rm_berat_3,
+
+            'hs_grade_1' => $c->hs_grade_1,
+            'hs_grade_2' => $c->hs_grade_2,
+            'hs_grade_3' => $c->hs_grade_3,
+            'hs_berat_1' => $c->hs_berat_1,
+            'hs_berat_2' => $c->hs_berat_2,
+            'hs_berat_3' => $c->hs_berat_3,
+        ])->toArray();
+
+        $first = $data->first();
+        if ($first) {
+            $this->selectedGradingService1 = $first->rm_grade_1;
+            $this->selectedGradingService2 = $first->rm_grade_2;
+            $this->selectedGradingService3 = $first->rm_grade_3;
+            $this->selectedGradingHService1 = $first->hs_grade_1;
+            $this->selectedGradingHService2 = $first->hs_grade_2;
+            $this->selectedGradingHService3 = $first->hs_grade_3;
+        } else {
+            $this->selectedGradingService1 = null;
+            $this->selectedGradingService2 = null;
+            $this->selectedGradingService3 = null;
+            $this->selectedGradingHService1 = null;
+            $this->selectedGradingHService2 = null;
+            $this->selectedGradingHService3 = null;
+        }
 
         if (empty($this->rows)) {
             $this->addRow();
@@ -297,6 +375,7 @@ class CuttingByL extends Component
                 ->where('tggl_service', $this->session_tggl_service)
                 ->where('penerimaan_id', $this->penerimaan_id)
                 ->where('no_batch', $this->noBatch)
+                ->where('grade_size_id', $this->selectedSizingLoin)
                 ->delete();
 
             foreach ($this->rows as $row) {

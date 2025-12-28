@@ -8,7 +8,7 @@
             </a>
         </header>
 
-        <div class="page-heading">
+        <div class="page-heading" style="background-color: #435EBE; padding: 20px; border-radius: 8px; color: white;">
             <h3>Admin Dashboard</h3>
         </div>
         <div class="page-content">

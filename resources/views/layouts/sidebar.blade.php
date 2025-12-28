@@ -1,11 +1,11 @@
 <div id="sidebar">
     <div class="sidebar-wrapper active">
         <div class="sidebar-header position-relative">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
                 <div class="logo">
                     <a href="/admin">
                         <img src="{{ asset('img/Logo.png') }}" alt="Logo" srcset=""
-                            style="object-fit: contain; height: 150px; width: 150px;">
+                            style="object-fit: contain; height: 200px; width: 200px;">
                     </a>
                 </div>
 

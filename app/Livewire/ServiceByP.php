@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Cutting;
 use App\Models\PenerimaanIkan;
 use App\Models\KategoriByprodukCt;
 use App\Models\Service;
@@ -754,6 +755,48 @@ class ServiceByP extends Component
 
         $product = KategoriByprodukCt::find($kategoriId);
         return $product ? $product->nama_produk : 'Produk Tidak Diketahui';
+    }
+
+    public function calculateTotalCutting(int $index)
+    {
+        if (empty($this->rows[$index]) || empty($this->rows[$index]['no_batch']) || empty($this->penerimaan_id)) {
+            return;
+        }
+
+        $row = [
+            'no_batch' => $this->rows[$index]['no_batch'],
+        ];
+
+        for ($i = 1; $i <= 7; $i++) {
+            $kategoriId = $this->selectedKategoriByproduk[$i] ?? null;
+
+            if (empty($kategoriId)) {
+                continue;
+            }
+
+            $cuttings = Cutting::where('penerimaan_id', $this->penerimaan_id)
+                ->where('kategori_byproduk_id', $kategoriId)
+                ->where('no_batch', $this->rows[$index]['no_batch'])
+                ->select('total_produk', 'berat_produk')
+                ->get();
+
+            $weightSum = 0;
+            $pcsSum = 0;
+
+            $cuttings->each(function ($cutting) use (&$weightSum, &$pcsSum) {
+                $weight = is_array($cutting->berat_produk) ? (float)$cutting->berat_produk[0] : (float)$cutting->berat_produk;
+                $total = is_array($cutting->total_produk) ? (int)$cutting->total_produk[0] : (int)$cutting->total_produk;
+
+                $weightSum += $weight;
+                $pcsSum += $total;
+            });
+
+            $row['berat_produk' . $i] = $weightSum;
+            $row['total_produk' . $i] = $pcsSum;
+        }
+
+        // Update baris dengan data yang dihitung
+        $this->rows[$index] = array_merge($this->rows[$index], $row);
     }
 
     // Update method updatedPenerimaanId untuk memuat data saat penerimaan_id berubah

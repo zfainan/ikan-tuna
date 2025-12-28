@@ -249,7 +249,7 @@
                                 <td>
                                     <input type="text" wire:model="rows.{{ $index }}.no_batch"
                                         wire:model.defer="rows.{{ $index }}.no_batch"
-                                        class="excel-input text-center" placeholder="No Batch" required>
+                                        class="excel-input text-center" placeholder="No Batch" required wire:change="calculateTotalCutting({{ $index }})">
                                     @error('rows.{{ $index }}.no_batch')
                                         <div class="text-danger small">{{ $message }}</div>
                                     @enderror

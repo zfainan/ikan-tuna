@@ -195,6 +195,8 @@ class CuttingByP extends Component
                 }
                 $this->addRow();
             }
+
+            $this->calculateTotals();
         } catch (\Exception $e) {
             Log::error('Error loading data: ' . $e->getMessage());
             Log::error('Error loading data: ' . $e->getTraceAsString());

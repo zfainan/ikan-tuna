@@ -212,7 +212,7 @@
                                 <th colspan="2">
                                     <select wire:model.live="selectedKategoriByproduk.{{ $i }}"
                                         class="excel-input @error('selectedKategoriByproduk.' . $i) is-invalid @enderror"
-                                        style="font-size:.8rem; height:30px; background-color:rgb(121, 173, 246);" wire:change="reloadRowsWithkategoriData">
+                                        style="font-size:.8rem; height:30px; background-color:rgb(121, 173, 246);" wire:change="loadData(1)">
                                         <option value="" class="text-center" style="font-weight: bold;">
                                             -- Produk --
                                         </option>

@@ -95,7 +95,7 @@ class CuttingByP extends Component
     }
 
     // Fungsi untuk memuat data yang sudah ada di database
-    public function loadData()
+    public function loadData(bool $withKategoriData = false)
     {
         try {
             $this->rows = [];
@@ -116,6 +116,12 @@ class CuttingByP extends Component
                 $query->where('tgl_injek_co', $this->session_tgl_injek_co);
             }
 
+            if ($withKategoriData) {
+               $query->whereIn('kategori_byproduk_id', array_values(
+                    array_filter($this->selectedKategoriByproduk)
+               ));
+            }
+
             // Ambil data dan urutkan berdasarkan no_batch dan kategori
             $cuttings = $query->orderBy('no_batch')
                 ->orderBy('kategori_byproduk_id')
@@ -127,59 +133,57 @@ class CuttingByP extends Component
             foreach ($cuttings as $cutting) {
                 $noBatch = $cutting->no_batch;
 
-                if (!isset($groupedData[$noBatch])) {
-                    $groupedData[$noBatch] = [
-                        'no_batch' => $noBatch,
-                        'tgl_cutting' => $cutting->tgl_cutting,
-                        'tgl_injek_co' => $cutting->tgl_injek_co,
-                        'produk' => []
-                    ];
+                if (empty($groupedData[$noBatch])) {
+                    $groupedData[$noBatch] = [];
                 }
 
-                // Pastikan nilai berat dan total adalah single value, bukan array
-                $berat = is_array($cutting->berat_produk) ? $cutting->berat_produk[0] : $cutting->berat_produk;
-                $total = is_array($cutting->total_produk) ? $cutting->total_produk[0] : $cutting->total_produk;
+                if (empty($groupedData[$noBatch][$cutting->kategori_byproduk_id])) {
+                    $groupedData[$noBatch][$cutting->kategori_byproduk_id] = [];
+                }
 
-                // Tambahkan data produk
-                $groupedData[$noBatch]['produk'][] = [
+                $groupedData[$noBatch][$cutting->kategori_byproduk_id][] = [
                     'kategori_id' => $cutting->kategori_byproduk_id,
                     'nama' => $cutting->kategori_byproduk->nama_produk ?? 'Produk Tidak Diketahui',
-                    'berat' => (float) $berat,
-                    'total' => (int) $total
+                    'berat' => is_array($cutting->berat_produk) ? (float)$cutting->berat_produk[0] : (float)$cutting->berat_produk,
+                    'total' => is_array($cutting->total_produk) ? (int)$cutting->total_produk[0] : (int)$cutting->total_produk,
                 ];
             }
 
             // Format data sesuai yang diharapkan view
             $formattedRows = [];
 
-            foreach ($groupedData as $batch) {
-                $row = [
-                    'no_batch' => $batch['no_batch'],
-                    'tgl_cutting' => $batch['tgl_cutting'],
-                    'tgl_injek_co' => $batch['tgl_injek_co']
-                ];
+            foreach ($groupedData as $batch => $value) {
+                $maxRows = max(array_map('count', $value));
 
-                // Inisialisasi semua kolom produk
-                for ($i = 1; $i <= 7; $i++) {
-                    $row['berat_produk' . $i] = null;
-                    $row['total_produk' . $i] = null;
-                }
+                $rows = [];
+                for ($i = 0; $i < $maxRows; $i++) {
+                    $row = [
+                        'no_batch' => $batch,
+                        'tgl_cutting' => '',
+                        'tgl_injek_co' => ''
+                    ];
 
-                // Isi data produk
-                foreach ($batch['produk'] as $index => $produk) {
-                    $urutan = $index + 1;
-                    if ($urutan <= 7) { // Maksimal 7 kolom produk
-                        $row['berat_produk' . $urutan] = $produk['berat'];
-                        $row['total_produk' . $urutan] = $produk['total'];
+                    // Inisialisasi semua kolom produk
+                    for ($j = 1; $j <= 7; $j++) {
+                        $kategoriId = $this->selectedKategoriByproduk[$j] ?? null;
 
-                        // Set selectedKategoriByproduk untuk dropdown
-                        if ($produk['kategori_id']) {
-                            $this->selectedKategoriByproduk[$urutan] = $produk['kategori_id'];
+                        if (empty($kategoriId) || empty($value[$kategoriId][$i])) {
+                            $row['berat_produk' . $j] = null;
+                            $row['total_produk' . $j] = null;
+
+                            continue;
                         }
+
+                        $produk = $value[$kategoriId][$i];
+
+                        $row['berat_produk' . $j] = $produk['berat'];
+                        $row['total_produk' . $j] = $produk['total'];
                     }
+
+                    $rows[] = $row;
                 }
 
-                $formattedRows[] = $row;
+                $formattedRows = array_merge($formattedRows, $rows);
             }
 
             $this->rows = $formattedRows;
@@ -191,119 +195,9 @@ class CuttingByP extends Component
                 }
                 $this->addRow();
             }
-
-            // Debug: Tampilkan data yang akan dikirim ke view
-            Log::info('Data yang akan ditampilkan:', $this->rows);
         } catch (\Exception $e) {
             Log::error('Error loading data: ' . $e->getMessage());
-            session()->flash('error', 'Gagal memuat data: ' . $e->getMessage());
-        }
-    }
-
-    public function reloadRowsWithkategoriData()
-    {
-        try {
-            $this->rows = [];
-
-            // Ambil data dari database
-            $query = Cutting::with(['kategori_byproduk', 'penerimaan']);
-
-            // Filter berdasarkan form input
-            if ($this->penerimaan_id) {
-                $query->where('penerimaan_id', $this->penerimaan_id);
-            }
-
-            if ($this->session_tgl_cutting) {
-                $query->where('tgl_cutting', $this->session_tgl_cutting);
-            }
-
-            if ($this->session_tgl_injek_co) {
-                $query->where('tgl_injek_co', $this->session_tgl_injek_co);
-            }
-
-            // Ambil data dan urutkan berdasarkan no_batch dan kategori
-            $cuttings = $query->orderBy('no_batch')
-                ->orderBy('kategori_byproduk_id')
-                ->whereIn('kategori_byproduk_id', array_values(
-                    array_filter($this->selectedKategoriByproduk)
-                ))
-                ->get();
-
-            // Kelompokkan data berdasarkan no_batch
-            $groupedData = [];
-
-            foreach ($cuttings as $cutting) {
-                $noBatch = $cutting->no_batch;
-
-                if (!isset($groupedData[$noBatch])) {
-                    $groupedData[$noBatch] = [
-                        'no_batch' => $noBatch,
-                        'tgl_cutting' => $cutting->tgl_cutting,
-                        'tgl_injek_co' => $cutting->tgl_injek_co,
-                        'produk' => []
-                    ];
-                }
-
-                // Pastikan nilai berat dan total adalah single value, bukan array
-                $berat = is_array($cutting->berat_produk) ? $cutting->berat_produk[0] : $cutting->berat_produk;
-                $total = is_array($cutting->total_produk) ? $cutting->total_produk[0] : $cutting->total_produk;
-
-                // Tambahkan data produk
-                $groupedData[$noBatch]['produk'][] = [
-                    'kategori_id' => $cutting->kategori_byproduk_id,
-                    'nama' => $cutting->kategori_byproduk->nama_produk ?? 'Produk Tidak Diketahui',
-                    'berat' => (float) $berat,
-                    'total' => (int) $total
-                ];
-            }
-
-            // Format data sesuai yang diharapkan view
-            $formattedRows = [];
-
-            foreach ($groupedData as $batch) {
-                $row = [
-                    'no_batch' => $batch['no_batch'],
-                    'tgl_cutting' => $batch['tgl_cutting'],
-                    'tgl_injek_co' => $batch['tgl_injek_co']
-                ];
-
-                // Inisialisasi semua kolom produk
-                for ($i = 1; $i <= 7; $i++) {
-                    $row['berat_produk' . $i] = null;
-                    $row['total_produk' . $i] = null;
-                    // Inisialisasi kategori yang dipilih
-                    // $this->selectedKategoriByproduk[$i] = null;
-                }
-
-                // Isi data produk
-                foreach ($batch['produk'] as $index => $produk) {
-                    // get index
-                    $idxs = array_filter(
-                        $this->selectedKategoriByproduk,
-                        fn($val) => $val == $produk['kategori_id'],
-                    );
-
-                    if (!empty($idxs)) {
-                        foreach ($idxs as $index => $val) {
-                            if ($index <= 7) {
-                                $row['berat_produk' . ($index)] = $produk['berat'];
-                                $row['total_produk' . ($index)] = $produk['total'];
-                            }
-                        }
-                    }
-                }
-
-                $formattedRows[] = $row;
-            }
-
-            $this->rows = $formattedRows;
-
-            // Jika tidak ada data, tambahkan baris kosong
-            if (empty($this->rows)) {
-                $this->addRow();
-            }
-        } catch (\Exception $e) {
-            Log::error('Error loading data: ' . $e->getMessage());
+            Log::error('Error loading data: ' . $e->getTraceAsString());
             session()->flash('error', 'Gagal memuat data: ' . $e->getMessage());
         }
     }

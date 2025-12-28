@@ -164,11 +164,12 @@
             padding: 0 2px;
             font-size: 0.75rem;
             font-family: 'Arial Narrow', sans-serif;
-            border: 1px solid hsl(0, 89.20%, 7.30%);
+            border: none;
             border-radius: 3px;
         }
         .excel-input:focus {
-            border-color: hsl(0, 89.20%, 7.30%);
+            outline: none;
+            border: none;
             box-shadow: none;
         }
         .excel-table select {

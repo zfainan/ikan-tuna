@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori_produk;
 use App\Models\PenerimaanIkan;
 use App\Models\Supplier;
 use App\Models\Grade;
@@ -17,7 +16,6 @@ class PenerimaanIkanController extends Controller
      */
     public function index()
     {
-        
         $data = PenerimaanIkan::all();
         $totaldata = PenerimaanIkan::count();
         $suppliers = Supplier::all();
@@ -33,13 +31,6 @@ class PenerimaanIkanController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $jenis_penerimaan = ['Fresh GG', 'Frozen WR'];
-        
-    }
-
-// PDF Penerimaan Ikan
     public function ikanPdf(Request $request)
     {
         $date = $request->get('date');
@@ -53,7 +44,7 @@ class PenerimaanIkanController extends Controller
             $supplier_name = $supplierModel ? $supplierModel->nama_supplier : 'Supplier Tidak Ditemukan';
         }
 
-        $query = Penerimaan_Ikan::with(['grade', 'kategoriBeratPenerimaan', 'supplier']);
+        $query = PenerimaanIkan::with(['grade', 'kategoriBeratPenerimaan', 'supplier']);
 
         if ($date) {
             $query->whereDate('tgl_penerimaan', $date);
@@ -131,7 +122,7 @@ class PenerimaanIkanController extends Controller
      */
     public function show($penerimaan_id)
     {
-        $penerimaanIkan = Penerimaan_Ikan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
+        $penerimaanIkan = PenerimaanIkan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
         return view('admin.transaksi.show_penerimaan_ikan', compact('penerimaanIkan'));
     }
 
@@ -140,7 +131,7 @@ class PenerimaanIkanController extends Controller
      */
     public function edit($penerimaan_id)
     {
-        $penerimaanIkan = Penerimaan_Ikan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
+        $penerimaanIkan = PenerimaanIkan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
         return view('admin.transaksi.edit_penerimaan_ikan', compact('penerimaanIkan'));
     }
 
@@ -158,7 +149,7 @@ class PenerimaanIkanController extends Controller
 
         $kategoriBeratId = $this->getKategoriBeratId($validated['berat_ikan']);
 
-        $penerimaanIkan = Penerimaan_Ikan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
+        $penerimaanIkan = PenerimaanIkan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
         $penerimaanIkan->update([
             'tgl_penerimaan' => $validated['tgl_penerimaan'],
             'supplier_id' => $validated['supplier_id'],
@@ -175,7 +166,7 @@ class PenerimaanIkanController extends Controller
      */
     public function destroy($penerimaan_id)
     {
-        $penerimaanIkan = Penerimaan_Ikan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
+        $penerimaanIkan = PenerimaanIkan::where('penerimaan_id', $penerimaan_id)->firstOrFail();
         $penerimaanIkan->delete();
 
         return redirect()->route('penerimaan_ikan.index')->with('success', 'Penerimaan Ikan berhasil dihapus.');

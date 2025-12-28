@@ -9,7 +9,6 @@ use App\Http\Controllers\KategoriProdukController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\KategoriBeratPenerimaanController;
-use App\Http\Controllers\KategoriBeratCuttingController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GradeLController;
 use App\Http\Controllers\GradeSController;
@@ -60,6 +59,7 @@ Route::resource('kategori-byproduk-ct', KategoriByprodukCtController::class)
 Route::resource('kategori-produk', KategoriProdukController::class)
     ->parameters(['kategori-produk' => 'kategori_produk_id'])
     ->middleware('auth');
+
 //MIDDLEWARE ADMIN
 Route::middleware('is_admin')->group(function () {
     Route::get('/admin', function () {

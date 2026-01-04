@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-class PackingController extends Controller
+class StockController extends Controller
 
 {
     /**
@@ -10,6 +10,6 @@ class PackingController extends Controller
      */
     public function index()
     {
-        return view('admin.transaksi.packing');
+        return view('admin.transaksi.stock');
     }
 }

@@ -81,7 +81,7 @@
                     </li>
                 @endif
                 <li
-                    class="sidebar-item has-sub {{ Request::is('penerimaan_ikan') || Request::is('cutting') || Request::is('cuttingl') || Request::is('servicel') || Request::is('service') || Request::is('packings') ? 'active' : '' }}">
+                    class="sidebar-item has-sub {{ Request::is('penerimaan_ikan') || Request::is('cutting') || Request::is('cuttingl') || Request::is('servicel') || Request::is('service') || Request::is('packings') || Request::is('stock') ? 'active' : '' }}">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Proses Produksi</span>
@@ -110,6 +110,10 @@
 
                         <li class="submenu-item {{ Request::is('packings') ? 'active' : '' }}">
                             <a href="/packings" class="submenu-link">Packing</a>
+                        </li>
+
+                        <li class="submenu-item {{ Request::is('stock') ? 'active' : '' }}">
+                            <a href="/stock" class="submenu-link">Stock</a>
                         </li>
                     </ul>
                 </li>

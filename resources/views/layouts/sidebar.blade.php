@@ -120,7 +120,7 @@
                 </li>
 
                 @if (Auth::user()->role_id == 1)
-                    <li class="sidebar-item has-sub {{ Request::is('reports/penerimaan-ikan') || Request::is('reports/packing') ? 'active' : '' }}">
+                    <li class="sidebar-item has-sub {{ Request::is('reports/penerimaan-ikan') || Request::is('reports/packing') || Request::is('reports/stock') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-collection-fill"></i>
                             <span>Laporan</span>
@@ -133,6 +133,10 @@
 
                             <li class="submenu-item {{ Request::is('reports/packing') ? 'active' : '' }}">
                                 <a href="/reports/packing" class="submenu-link">Packing</a>
+                            </li>
+
+                            <li class="submenu-item {{ Request::is('reports/stock') ? 'active' : '' }}">
+                                <a href="/reports/stock" class="submenu-link">Stock</a>
                             </li>
                         </ul>
                     </li>

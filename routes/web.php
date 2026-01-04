@@ -19,6 +19,7 @@ use App\Http\Controllers\PenerimaanIkanController;
 use App\Http\Controllers\PenerimaanIkanReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\StockReportController;
 use App\Http\Controllers\SupplierController;
 use App\Models\Cutting;
 use App\Models\KategoriProduk;
@@ -90,9 +91,13 @@ Route::middleware('is_admin')->group(function () {
         Route::post('/penerimaan-ikan', [PenerimaanIkanReportController::class, 'print'])
             ->name('penerimaan_ikan.print');
 
-        Route::get('/packing', PackingReportController::class)->name('packing.index');
-        Route::post('/packing', [PackingReportController::class, 'print'])
-            ->name('packing.print');
+        Route::get('/stock', StockReportController::class)->name('stock.index');
+        Route::post('/stock', [StockReportController::class, 'print'])
+            ->name('stock.print');
+
+        Route::get('/stock', StockReportController::class)->name('stock.index');
+        Route::post('/stock', [StockReportController::class, 'print'])
+            ->name('stock.print');
     });
 });
 

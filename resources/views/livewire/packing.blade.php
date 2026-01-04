@@ -76,6 +76,18 @@
                         <div class="invalid-feedback small">{{ $message }}</div>
                     @enderror
                 </div>
+
+                <div class="col-md-1">
+                    <label for="session_kode_lot" class="form-label small">Kode Lot</label>
+                        <input type="text" id="session_kode_lot" 
+                            wire:model.live="session_kode_lot" 
+                            class="form-control form-control-sm @error('session_kode_lot') is-invalid @enderror"
+                            @if(!$penerimaan_id) disabled @endif 
+                            required>
+                    @error('session_kode_lot')
+                        <div class="invalid-feedback small">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
         </div>
     </div>
@@ -83,7 +95,7 @@
     {{-- Status Sesi --}}
     <div class="row mt-3">
         <div class="col-12">
-            @if ($session_tgl_packing && $penerimaan_id)
+            @if ($session_tgl_packing && $penerimaan_id && $session_kode_lot)
                 @php
                     $selectedPenerimaan = $penerimaan_ikan->firstWhere('penerimaan_id', $penerimaan_id);
                 @endphp
@@ -97,6 +109,10 @@
                                 <div>
                                     <strong>Tanggal Packing:</strong>
                                     {{ \Carbon\Carbon::parse($session_tgl_packing)->format('d F Y') }}
+                                </div>
+                                <div>
+                                    <strong>Kode Lot:</strong>
+                                    {{ $session_kode_lot }}
                                 </div>
                             </div>
                             <div class="col-4 text-center">
@@ -121,6 +137,8 @@
                         Pilih tanggal penerimaan untuk melanjutkan input data.
                     @elseif(!$penerimaan_id)
                         Pilih jenis penerimaan untuk melanjutkan input data.
+                    @elseif(!$session_kode_lot)
+                        Masukkan kode lot untuk melanjutkan input data.
                     @else
                         Lengkapi semua data sesi terlebih dahulu.
                     @endif

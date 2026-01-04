@@ -13,6 +13,7 @@ class Packing extends Model
         'berat_produk',
         'total_produk',
         'tanggal',
+        'kode_lot',
     ];
 
     protected $casts = [

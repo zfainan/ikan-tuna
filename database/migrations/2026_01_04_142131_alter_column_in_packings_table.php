@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('packings', function (Blueprint $table) {
             $table->dropColumn(['no_batch', 'jumlah_pack']);
 
+            $table->string('kode_lot');
             $table->unsignedBigInteger('penerimaan_id');
             $table->unsignedBigInteger('kategori_byproduk_id')
                 ->nullable()
@@ -35,7 +36,12 @@ return new class extends Migration
             $table->string('no_batch');
             $table->integer('jumlah_pack')->default(0);
 
-            $table->dropColumn(['berat_produk', 'total_produk', 'penerimaan_id']);
+            $table->dropColumn([
+                'berat_produk',
+                'total_produk',
+                'penerimaan_id',
+                'kode_lot'
+            ]);
         });
     }
 };

@@ -16,6 +16,7 @@ class Packing extends Component
 {
     public $services = [];
     public $session_tgl_packing;
+    public $session_kode_lot;
     public $total_berat = [];
     public $total_pcs = [];
     public $penerimaan_ikan;
@@ -114,10 +115,16 @@ class Packing extends Component
     {
         if ($setHeader) {
             $headerProduct = PackingModel::select('kategori_produk_id')
+                ->where('tanggal', $this->session_tgl_packing)
+                ->where('penerimaan_id', $this->penerimaan_id)
+                ->where('kode_lot', $this->session_kode_lot)
                 ->whereNotNull('kategori_produk_id')
                 ->groupBy('kategori_produk_id')
                 ->pluck('kategori_produk_id');
             $headerByProduct = PackingModel::select('kategori_byproduk_id')
+                ->where('tanggal', $this->session_tgl_packing)
+                ->where('penerimaan_id', $this->penerimaan_id)
+                ->where('kode_lot', $this->session_kode_lot)
                 ->whereNotNull('kategori_byproduk_id')
                 ->groupBy('kategori_byproduk_id')
                 ->pluck('kategori_byproduk_id');
@@ -140,6 +147,7 @@ class Packing extends Component
 
         $data = PackingModel::where('tanggal', $this->session_tgl_packing)
             ->where('penerimaan_id', $this->penerimaan_id)
+            ->where('kode_lot', $this->session_kode_lot)
             ->where(function (Builder $q) {
                 $byProductIds = array_map(
                     fn($el) => $el['value'],
@@ -287,7 +295,7 @@ class Packing extends Component
                 unset($this->rows[$index]);
                 $this->rows = array_values($this->rows); // Reindex array
                 $this->calculateTotals();
-                $this->saveAll();
+                $this->saveAll(false);
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal menghapus data: ' . $e->getMessage());
@@ -295,37 +303,39 @@ class Packing extends Component
         }
     }
 
-    public function saveAll()
+    public function saveAll($validate = true)
     {
         try {
-            // Validasi input
-            $this->validate([
-                'penerimaan_id' => 'required',
-                'session_tgl_packing' => 'required|date',
-            ], [
-                'penerimaan_id.required' => 'Penerimaan harus dipilih',
-                'session_tgl_packing.required' => 'Tanggal service harus diisi',
-            ]);
+            if ($validate) {
+                // Validasi input
+                $this->validate([
+                    'penerimaan_id' => 'required',
+                    'session_tgl_packing' => 'required|date',
+                ], [
+                    'penerimaan_id.required' => 'Penerimaan harus dipilih',
+                    'session_tgl_packing.required' => 'Tanggal service harus diisi',
+                ]);
 
-            // Validasi minimal satu data terisi
-            $hasValidData = false;
-            foreach ($this->rows as $row) {
-                for ($i = 1; $i <= 7; $i++) {
-                    $berat = $row['berat_produk' . $i] ?? 0;
-                    $total = $row['total_produk' . $i] ?? 0;
-                    $kategoriId = $this->selectedKategoriByproduk[$i] ?? null;
+                // Validasi minimal satu data terisi
+                $hasValidData = false;
+                foreach ($this->rows as $row) {
+                    for ($i = 1; $i <= 7; $i++) {
+                        $berat = $row['berat_produk' . $i] ?? 0;
+                        $total = $row['total_produk' . $i] ?? 0;
+                        $kategoriId = $this->selectedKategoriByproduk[$i] ?? null;
 
-                    if (($berat > 0 || $total > 0) && !empty($kategoriId)) {
-                        $hasValidData = true;
-                        break 2;
+                        if (($berat > 0 || $total > 0) && !empty($kategoriId)) {
+                            $hasValidData = true;
+                            break 2;
+                        }
                     }
                 }
-            }
 
-            if (!$hasValidData) {
-                throw new \Exception(
-                    'Tidak ada data yang akan disimpan. Pastikan Anda telah mengisi minimal satu data produk.'
-                );
+                if (!$hasValidData) {
+                    throw new \Exception(
+                        'Tidak ada data yang akan disimpan. Pastikan Anda telah mengisi minimal satu data produk.'
+                    );
+                }
             }
 
             DB::beginTransaction();
@@ -333,6 +343,7 @@ class Packing extends Component
             // Hapus data lama berdasarkan filter yang sama
             PackingModel::where('tanggal', $this->session_tgl_packing)
                 ->where('penerimaan_id', $this->penerimaan_id)
+                ->where('kode_lot', $this->session_kode_lot)
                 ->where(function (Builder $q) {
                     $byProductIds = array_map(
                         fn($el) => $el['value'],
@@ -372,6 +383,7 @@ class Packing extends Component
                     if (!empty($kategoriId) && !empty($type) && ($berat > 0 || $total > 0)) {
                         try {
                             PackingModel::create([
+                                'kode_lot' => $this->session_kode_lot,
                                 'tanggal' => $this->session_tgl_packing,
                                 'penerimaan_id' => $this->penerimaan_id,
                                 'kategori_byproduk_id' => $type === 'byproduk' ? $kategoriId : null,
@@ -395,7 +407,7 @@ class Packing extends Component
                 }
             }
 
-            if ($savedCount === 0) {
+            if ($validate && $savedCount === 0) {
                 throw new \Exception(
                     'Tidak ada data yang berhasil disimpan. Pastikan Anda telah mengisi data dengan benar.'
                 );
@@ -533,10 +545,9 @@ class Packing extends Component
         $this->rows[$index] = array_merge($this->rows[$index], $row);
     }
 
-    // Update method updatedPenerimaanId untuk memuat data saat penerimaan_id berubah
-    public function updatedPenerimaanId($value)
+    public function updatedSessionKodeLot($value)
     {
-        if ($this->session_tgl_packing && $this->penerimaan_id) {
+        if ($this->session_tgl_packing && $this->penerimaan_id && $value) {
             $this->loadData();
         } else {
             $this->resetForm();

@@ -140,6 +140,53 @@
         </div>
     </div>
 
+     {{-- Style Tabel CSS --}}
+    <style>
+        .excel-table {
+            font-size: 0.75rem;
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .excel-table th,
+        .excel-table td {
+            border: 1px solid hsl(0, 100.00%, 0.40%);
+            padding: 2px 4px;
+            vertical-align: middle;
+        }
+
+        .excel-input {
+            width: 100%;
+            height: 22px;
+            padding: 0 2px;
+            font-size: 0.75rem;
+            font-family: 'Arial Narrow', sans-serif;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .excel-input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .excel-table select {
+            height: 22px;
+            font-size: 0.75rem;
+            padding: 0 2px;
+            border-radius: 0;
+        }
+
+        .excel-table .btn-sm {
+            padding: 0 6px;
+            height: 22px;
+            font-size: 0.7rem;
+            line-height: 1;
+        }
+    </style>
+
     {{-- =========================
         TABLE TITLE
     ========================== --}}
@@ -340,58 +387,25 @@
     {{-- =========================
         SAVE BUTTON
     ========================== --}}
-    <div class="mt-3 text-end">
-        <button class="btn btn-primary btn-sm" wire:click="saveAll" wire:loading.attr="disabled">
-            <i class="bi bi-save"></i> Simpan
+    <div class="card-footer px-2 py-1 text-end">
+        <button type="submit" class="btn btn-primary btn-sm px-2 py-0" wire:click="saveAll" 
+            wire:loading.attr="disabled" wire:target="saveAll" style="font-size: 0.7rem; height: 30px;">
+            <span wire:loading.remove wire:target="saveAll">
+                <i class="bi bi-save"></i> Simpan
+            </span>
+            <span wire:loading wire:target="saveAll">
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                Menyimpan...
+            </span>
+        </button>
+
+        <button type="button" class="btn btn-secondary btn-sm px-2 py-0" wire:click="print"
+            style="font-size: 0.7rem; height: 30px;">
+            <i class="bi bi-printer"></i> Print
         </button>
     </div>
 
-    {{-- Style Tabel CSS --}}
-    <style>
-        .excel-table {
-            font-size: 0.75rem;
-            border-collapse: collapse;
-            width: 100%;
-            table-layout: fixed;
-        }
-
-        .excel-table th,
-        .excel-table td {
-            border: 1px solid hsl(0, 100.00%, 0.40%);
-            padding: 2px 4px;
-            vertical-align: middle;
-        }
-
-        .excel-input {
-            width: 100%;
-            height: 22px;
-            padding: 0 2px;
-            font-size: 0.75rem;
-            font-family: 'Arial Narrow', sans-serif;
-            border: none;
-            border-radius: 3px;
-        }
-
-        .excel-input:focus {
-            outline: none;
-            border: none;
-            box-shadow: none;
-        }
-
-        .excel-table select {
-            height: 22px;
-            font-size: 0.75rem;
-            padding: 0 2px;
-            border-radius: 0;
-        }
-
-        .excel-table .btn-sm {
-            padding: 0 6px;
-            height: 22px;
-            font-size: 0.7rem;
-            line-height: 1;
-        }
-    </style>
+   
 </div>
 
 @push('scripts')

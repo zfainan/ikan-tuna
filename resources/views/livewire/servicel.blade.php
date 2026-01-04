@@ -303,12 +303,12 @@
     {{-- Button Simpan --}}
     <div class="card-footer px-2 py-1 text-end">
         <button type="submit" class="btn btn-primary btn-sm px-2 py-0" wire:click="saveAll"
-            wire:loading.attr="disabled" style="font-size:.8rem;">
+            wire:loading.attr="disabled" style="font-size:0.7rem; height: 30px;">
             <i class="bi bi-save"></i> <span>Simpan</span>
         </button>
 
         <button type="button" class="btn btn-secondary btn-sm px-2 py-0" wire:click="print"
-            style="font-size:.8rem;">
+            style="font-size:0.7rem; height: 30px;">
             <i class="bi bi-printer"></i> Print
         </button>
 

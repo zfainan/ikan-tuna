@@ -1,4 +1,134 @@
 <div>
+    <!-- Success/Error Messages -->
+    @if (session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('message') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    {{-- Form Input Data & Filter --}}
+    <div class="card border-0 shadow-sm">
+        <div class="card-header px-3 py-2 text-white"
+            style="background: linear-gradient(135deg,hsl(210, 97.60%, 48.80%),rgba(209, 202, 0, 0.88)); font-size: 0.85rem;">
+            <i class="bi bi-pencil-square me-1"></i>Form Input Data Service
+        </div>
+        <div class="card-body p-3">
+            <div class="row g-2">
+                <div class="col-md-auto">
+                    <label for="session_tgl_packing" class="form-label small">Tanggal Packing</label>
+                    <input type="date" id="session_tgl_packing" wire:model.live="session_tgl_packing"
+                        class="form-control form-control-sm @error('session_tgl_packing') is-invalid @enderror"
+                        required>
+                    @error('session_tgl_packing')
+                        <div class="invalid-feedback small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-auto">
+                    <label for="selectedTanggalPenerimaan" class="form-label small">Tanggal Penerimaan</label>
+                    <select id="selectedTanggalPenerimaan" wire:model.live="selectedTanggalPenerimaan"
+                        wire:change="updateSelectedTanggalPenerimaan($event.target.value)"
+                        class="form-select form-select-sm @error('selectedTanggalPenerimaan') is-invalid @enderror"
+                        @if (!$session_tgl_packing) disabled @endif required>
+                        <option value="">Pilih Tanggal Penerimaan</option>
+                        @if (isset($penerimaan_ikan) && $penerimaan_ikan->isNotEmpty())
+                            @foreach ($penerimaan_ikan->unique('tgl_penerimaan') as $penerimaan)
+                                <option value="{{ $penerimaan->penerimaan_id }}">
+                                    {{ \Carbon\Carbon::parse($penerimaan->tgl_penerimaan)->format('d F Y') }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                    @error('selectedTanggalPenerimaan')
+                        <div class="invalid-feedback small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-auto">
+                    <label for="penerimaan_id" class="form-label small">Jenis Penerimaan</label>
+                    <select id="penerimaan_id" wire:model.live="penerimaan_id"
+                        class="form-select form-select-sm @error('penerimaan_id') is-invalid @enderror"
+                        @if (!$selectedTanggalPenerimaan) disabled @endif required>
+                        <option value="">Pilih Jenis Penerimaan</option>
+                        @forelse ($filteredPenerimaan as $penerimaan)
+                            @php
+                                $jenis = $penerimaan->jenis_penerimaan;
+                                $supplier = $penerimaan->supplier->nama_supplier ?? 'Tidak ada supplier';
+                                $alamat = $penerimaan->supplier->alamat ?? 'Tidak ada alamat';
+                                $displayText = $jenis . '  ' . $alamat . '  ' . $supplier;
+                            @endphp
+                            <option value="{{ $penerimaan->penerimaan_id }}">
+                                {{ $displayText }}
+                            </option>
+                        @empty
+                            <option value="">Tidak ada data penerimaan ikan</option>
+                        @endforelse
+                    </select>
+                    @error('penerimaan_id')
+                        <div class="invalid-feedback small">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Status Sesi --}}
+    <div class="row mt-3">
+        <div class="col-12">
+            @if ($session_tgl_packing && $penerimaan_id)
+                @php
+                    $selectedPenerimaan = $penerimaan_ikan->firstWhere('penerimaan_id', $penerimaan_id);
+                @endphp
+                <div class="rounded-3 p-2 text-white shadow-sm"
+                    style="background: linear-gradient(135deg,hsl(210, 97.60%, 48.80%),rgba(209, 202, 0, 0.88)); font-size: 0.75rem;">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    <strong>Sesi Aktif:</strong>
+                    <div class="mt-1">
+                        <div class="row">
+                            <div class="col-4 text-start">
+                                <div>
+                                    <strong>Tanggal Packing:</strong>
+                                    {{ \Carbon\Carbon::parse($session_tgl_packing)->format('d F Y') }}
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                @if ($selectedPenerimaan)
+                                    <div><strong>Tanggal Penerimaan:</strong>
+                                        {{ \Carbon\Carbon::parse($selectedPenerimaan->tgl_penerimaan)->format('d F Y') }}
+                                    </div>
+                                    <div><strong>Jenis Penerimaan:</strong> {{ $selectedPenerimaan->jenis_penerimaan }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="rounded-3 p-2 text-white shadow-sm"
+                    style="background:linear-gradient(135deg,hsl(210, 97.60%, 48.80%),rgba(209, 202, 0, 0.88)); border: 1px solid rgb(255, 255, 255); font-size: 0.75rem;">
+                    <i class="bi bi-info-circle me-1"></i>
+                    @if (!$session_tgl_packing)
+                        Pilih tanggal packing terlebih dahulu.
+                    @elseif(!$selectedTanggalPenerimaan)
+                        Pilih tanggal penerimaan untuk melanjutkan input data.
+                    @elseif(!$penerimaan_id)
+                        Pilih jenis penerimaan untuk melanjutkan input data.
+                    @else
+                        Lengkapi semua data sesi terlebih dahulu.
+                    @endif
+                </div>
+            @endif
+        </div>
+    </div>
+
     {{-- Style Tabel CSS --}}
     <style>
         .excel-table {
@@ -21,12 +151,13 @@
             padding: 0 2px;
             font-size: 0.75rem;
             font-family: 'Arial Narrow', sans-serif;
-            border: 1px solid hsl(0, 89.20%, 7.30%);
+            border: none;
             border-radius: 3px;
         }
 
         .excel-input:focus {
-            border-color: hsl(0, 89.20%, 7.30%);
+            outline: none;
+            border: none;
             box-shadow: none;
         }
 
@@ -45,128 +176,130 @@
         }
     </style>
 
-    <!-- Success/Error Messages -->
-    @if (session()->has('message'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('message') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{-- ======== TABEL INPUT DETAIL (berat & pcs) + Tombol Tambah & Simpan ======== --}}
+    <div class="d-flex justify-content-center my-3">
+        <div class="card-header d-flex justify-content-between align-items-center px-2 py-1" style="max-width: 450px;">
+            <span class="fw-semibold"
+                style="font-size: 1.3rem; font-family: 'Copperplate', fantasy; color:rgb(16, 10, 10); letter-spacing: 1px; text-transform: uppercase;">
+                <img src="/img/Logo.png" alt="Logo" width="100" height="100">
+                Tally Packing
+            </span>
         </div>
-    @endif
+    </div>
 
-    @if (session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    <div class="card-body p-1">
+        <button class="btn btn-sm btn-success mb-2 px-1 py-0" wire:click="addRow" style="font-size: 0.8rem;">
+            <i class="bi bi-plus-circle"></i> <span>Tambah</span>
+        </button>
+        <div class="card mb-2 shadow-sm">
+            <div class="table-responsive">
+                <table class="excel-table">
+                    <thead class="table-light text-center align-middle" style="background-color:rgb(121, 173, 246);">
+                        <tr>
+                            <th rowspan="2">No.</th>
+                            {{-- Produk --}}
+                            @for ($i = 1; $i <= 7; $i++)
+                                <th colspan="2">
+                                    <select
+                                        class="excel-input @error('selectedKategoriByproduk.' . $i . '.value') is-invalid @enderror"
+                                        style="font-size:.8rem; height:30px; background-color:rgb(121, 173, 246);"
+                                        wire:change="reloadRowsWithHeader({{ $i }}, $event.target.value)">
+                                        <option value="" class="text-center" style="font-weight: bold;">
+                                            -- Produk --
+                                        </option>
+                                        @foreach ($kategori_byproduk_ct as $produk)
+                                            <option value="byproduk_{{ $produk->kategori_byproduk_id }}"
+                                                @selected($selectedKategoriByproduk[$i]['type'] === 'byproduk' && $selectedKategoriByproduk[$i]['value'] == $produk->kategori_byproduk_id) class="text-center">
+                                                {{ $produk->nama_produk }}
+                                            </option>
+                                        @endforeach
+                                        @foreach ($kategori_produk as $produk)
+                                            <option value="produk_{{ $produk->kategori_produk_id }}"
+                                                class="text-center" @selected($selectedKategoriByproduk[$i]['type'] === 'produk' && $selectedKategoriByproduk[$i]['value'] == $produk->kategori_produk_id)>
+                                                {{ $produk->nama_produk }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('selectedKategoriByproduk.' . $i)
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </th>
+                            @endfor
+                            <th rowspan="2" style="width: 40px;">Aksi</th>
+                        </tr>
+                        <tr>
+                            @for ($i = 1; $i <= 7; $i++)
+                                <th style="width: 120px;">Berat (Kg)</th>
+                                <th style="width: 120px;">Total (Pcs)</th>
+                            @endfor
+                        </tr>
+                    </thead>
 
-    {{-- Form Input Data & Filter --}}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-3">
-            <div class="row g-2">
-                <div class="col-md-auto">
-                    <label for="tanggal" class="form-label small">Tanggal Packing</label>
-                    <input type="date" id="tanggal" wire:model.live="tanggal"
-                        class="form-control form-control-sm @error('tanggal') is-invalid @enderror" required>
-                    @error('tanggal')
-                        <div class="invalid-feedback small">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-md-auto">
-                    <label for="kategoriByProdukId" class="form-label small">By Produk</label>
-                    <select id="kategoriByProdukId" wire:model.live="kategoriByProdukId"
-                        class="form-select form-select-sm @error('kategoriByProdukId') is-invalid @enderror" required>
-                        <option value="">Pilih By Produk</option>
-                        @if (isset($kategoriByProduk) && $kategoriByProduk->isNotEmpty())
-                            @foreach ($kategoriByProduk as $el)
-                                <option value="{{ $el->kategori_byproduk_id }}">
-                                    {{ $el->nama_produk }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                    @error('kategoriByProdukId')
-                        <div class="invalid-feedback small">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-md-auto">
-                    <label for="kategoriProdukId" class="form-label small">Produk</label>
-                    <select id="kategoriProdukId" wire:model.live="kategoriProdukId"
-                        class="form-select form-select-sm @error('kategoriProdukId') is-invalid @enderror" required>
-                        <option value="">Pilih Produk</option>
-                        @if (isset($kategoriProduk) && $kategoriProduk->isNotEmpty())
-                            @foreach ($kategoriProduk as $el)
-                                <option value="{{ $el->kategori_produk_id }}">
-                                    {{ $el->nama_produk }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                    @error('kategoriProdukId')
-                        <div class="invalid-feedback small">{{ $message }}</div>
-                    @enderror
-                </div>
+                    <tbody>
+                        @foreach ($rows as $index => $row)
+                            <tr>
+                                {{-- No. Batch --}}
+                                <td class="text-center">
+                                    {{ $index + 1 }}.
+                                </td>
+                                {{-- Berat & Total Produk --}}
+                                @for ($i = 1; $i <= 7; $i++)
+                                    <td>
+                                        <input type="number" step="0.01"
+                                            wire:model.live="rows.{{ $index }}.berat_produk{{ $i }}"
+                                            wire:model.defer="rows.{{ $index }}.berat_produk{{ $i }}"
+                                            wire:change="calculateTotals" class="excel-input text-center"
+                                            placeholder="Kg">
+                                    </td>
+                                    <td>
+                                        <input type="number" step="1"
+                                            wire:model.live="rows.{{ $index }}.total_produk{{ $i }}"
+                                            wire:model.defer="rows.{{ $index }}.total_produk{{ $i }}"
+                                            wire:change="calculateTotals" class="excel-input text-center"
+                                            placeholder="Pcs">
+                                    </td>
+                                @endfor
+                                {{-- aksi --}}
+                                <td>
+                                    <button class="btn btn-danger btn-sm py-0"
+                                        wire:click="removeRow({{ $index }})"
+                                        style="font-size:.7rem; height:30px; width:30px;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        {{-- Total --}}
+                        <tr class="table-secondary fw-bold excel-input text-center"
+                            style="background-color:rgb(121, 173, 246);">
+                            <td>Total</td>
+                            @for ($i = 1; $i <= 7; $i++)
+                                <td>{{ number_format($total_berat[$i] ?? 0, 2) }} kg</td>
+                                <td>{{ number_format($total_pcs[$i] ?? 0, 0) }} pcs</td>
+                            @endfor
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
     </div>
 
-    <section class="section mt-4">
-        <div class="card" style="border-radius: 10px; overflow: hidden;">
-            <div class="card-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                <h4 class="card-title mt-2 text-white">Daftar Cutting by Product</h4>
-            </div>
-
-            <div class="card-body mt-2">
-                <div class="table-responsive">
-                    <table class="table-hover table">
-                        <thead class="bg-light">
-                            <tr>
-                                <th style="width: 50px;">No</th>
-                                <th>Nomor Batch</th>
-                                <th>By Produk</th>
-                                <th>Produk</th>
-                                <th>Jumlah</th>
-                                <th>Tanggal</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($packings as $item)
-                                <tr style="background: linear-gradient(to right, #f9f9f9 0%, #f0f7ff 100%);">
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->no_batch }}</td>
-                                    <td>{{ $item->kategoriByProduk?->nama_produk }}</td>
-                                    <td>{{ $item->kategoriProduk?->nama_produk }}</td>
-                                    <td>{{ $item->jumlah_pack }}</td>
-                                    <td>{{ $item->tanggal ? \Carbon\Carbon::parse($item->tanggal)->format('d F Y') : 'N/A' }}
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-danger btn-sm py-0"
-                                            style="font-size:.7rem; height:30px; width:30px;">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-
-                            @if ($packings->isEmpty())
-                                <tr>
-                                    <td colspan="7" class="text-center">Tidak ada data packing.</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-
-                {{ $packings->links() }}
-            </div>
-        </div>
-    </section>
-
     {{-- Button Simpan --}}
     <div class="card-footer px-2 py-1 text-end">
+        <button type="submit" class="btn btn-primary btn-sm px-2 py-0" wire:click="saveAll"
+            wire:loading.attr="disabled" wire:target="saveAll" style="font-size: 0.7rem; height: 30px;">
+            <span wire:loading.remove wire:target="saveAll">
+                <i class="bi bi-save"></i> <span>Simpan</span>
+            </span>
+            <span wire:loading wire:target="saveAll">
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                Menyimpan...
+            </span>
+        </button>
+
         <button type="button" class="btn btn-secondary btn-sm px-2 py-0" wire:click="print"
             style="font-size: 0.7rem; height: 30px;">
             <i class="bi bi-printer"></i> Print

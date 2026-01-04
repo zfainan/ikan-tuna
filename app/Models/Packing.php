@@ -7,8 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Packing extends Model
 {
     protected $fillable = [
-        'jumlah_pack',
+        'penerimaan_id',
+        'kategori_byproduk_id',
+        'kategori_produk_id',
+        'berat_produk',
+        'total_produk',
         'tanggal',
+    ];
+
+    protected $casts = [
+        'berat_produk' => 'decimal:2',
     ];
 
     public function kategoriByProduk()
@@ -19,5 +27,10 @@ class Packing extends Model
     public function kategoriProduk()
     {
         return $this->belongsTo(KategoriProduk::class, 'kategori_produk_id');
+    }
+
+    public function penerimaan()
+    {
+        return $this->belongsTo(PenerimaanIkan::class, 'penerimaan_id');
     }
 }

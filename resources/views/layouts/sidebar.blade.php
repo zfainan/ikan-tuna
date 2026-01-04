@@ -35,7 +35,8 @@
                 @endif
 
                 @if (Auth::user()->role_id == 1)
-                    <li class="sidebar-item has-sub {{ Request::is('akun') || Request::is('suppliers') || Request::is('grade') || Request::is('kategori_berat_penerimaan') || Request::is('gradel') || Request::is('grade_service') || Request::is('grade_hservice') || Request::is('kategori-byproduk-ct') || Request::is('kategori-produk') ? 'active' : '' }}">
+                    <li
+                        class="sidebar-item has-sub {{ Request::is('akun') || Request::is('suppliers') || Request::is('grade') || Request::is('kategori_berat_penerimaan') || Request::is('gradel') || Request::is('grade_service') || Request::is('grade_hservice') || Request::is('kategori-byproduk-ct') || Request::is('kategori-produk') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-database-fill"></i>
                             <span>Data Master</span>
@@ -119,14 +120,16 @@
                 </li>
 
                 @if (Auth::user()->role_id == 1)
-                    <li class="sidebar-item has-sub">
+                    <li class="sidebar-item has-sub {{ Request::is('reports/penerimaan-ikan') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-collection-fill"></i>
                             <span>Laporan</span>
                         </a>
 
                         <ul class="submenu">
-
+                            <li class="submenu-item {{ Request::is('reports/penerimaan-ikan') ? 'active' : '' }}">
+                                <a href="/reports/penerimaan-ikan" class="submenu-link">Ikan Masuk</a>
+                            </li>
                         </ul>
                     </li>
                 @endif

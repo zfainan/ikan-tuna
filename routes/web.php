@@ -15,6 +15,7 @@ use App\Http\Controllers\GradeSController;
 use App\Http\Controllers\GradeHController;
 use App\Http\Controllers\PackingController;
 use App\Http\Controllers\PenerimaanIkanController;
+use App\Http\Controllers\PenerimaanIkanReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
@@ -66,6 +67,7 @@ Route::middleware('is_admin')->group(function () {
     Route::get('/admin', function () {
         return view('admin.dashboard');
     });
+
     //Resource admin
     Route::resource('akun', AccountController::class);
     Route::resource('kategori', KategoriController::class);
@@ -76,11 +78,17 @@ Route::middleware('is_admin')->group(function () {
     Route::resource('kategori_berat_penerimaan', KategoriBeratPenerimaanController::class)
         ->parameters(['kategori_berat_penerimaan' => 'kategori_berat_id']);
     Route::resource('kategori-byproduk-ct', KategoriByprodukCtController::class)
-        ->parameters(['kategori-byproduk-ct'=> 'kategori_byproduk_id']);
+        ->parameters(['kategori-byproduk-ct' => 'kategori_byproduk_id']);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('penerimaan_ikan', PenerimaanIkanController::class);
     Route::resource('packings', PackingController::class)->only(['index']);
     Route::resource('stock', StockController::class)->only(['index']);
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/penerimaan-ikan', PenerimaanIkanReportController::class)->name('penerimaan_ikan.index');
+        Route::post('/penerimaan-ikan', [PenerimaanIkanReportController::class, 'print'])
+            ->name('penerimaan_ikan.print');
+    });
 });
 
 //MIDDLEWARE KARYAWAN

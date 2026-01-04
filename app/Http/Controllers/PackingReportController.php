@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\PenerimaanIkan;
 use App\Models\KategoriBeratPenerimaan;
+use App\Models\Packing;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
-class PenerimaanIkanReportController extends Controller
+class PackingReportController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,24 +23,23 @@ class PenerimaanIkanReportController extends Controller
         $since = $request->get('since');
         $until = $request->get('until');
 
-        $data = PenerimaanIkan::with([
-            'supplier',
-            'grade',
-            'kategoriBeratPenerimaan'
+        $data = Packing::with([
+            'kategoriByProduk',
+            'kategoriProduk',
+            'penerimaan'
         ])
-            ->whereBetween('tgl_penerimaan', [$since, $until])
-            ->groupBy('tgl_penerimaan')
-            ->groupBy('supplier_id')
-            ->groupBy('jenis_penerimaan')
-            ->groupBy('grade_id')
-            ->groupBy('kategori_berat_id')
-            ->selectRaw('kategori_berat_id, grade_id, supplier_id, jenis_penerimaan, tgl_penerimaan, SUM(berat_ikan) as total_berat_ikan, COUNT(*) as jumlah_penerimaan')
+            ->whereBetween('tanggal', [$since, $until])
+            ->groupBy('tanggal')
+            ->groupBy('kode_lot')
+            ->groupBy('kategori_byproduk_id')
+            ->groupBy('kategori_produk_id')
+            ->selectRaw('kategori_produk_id, kategori_byproduk_id, kode_lot, tanggal, SUM(berat_produk) as total_berat_produk, SUM(total_produk) as total_produk')
             ->get();
 
         // return $data;
 
         $pdf = Pdf::loadView(
-            'pdf.ikan',
+            'pdf.packing',
             compact(
                 'data',
                 'since',
@@ -55,7 +55,7 @@ class PenerimaanIkanReportController extends Controller
             $date = 'up_to_' . $until;
         }
         return $pdf->download(
-            'laporan_penerimaan_ikan_' . ($date ?? 'all_dates') . '.pdf'
+            'laporan_packing_' . ($date ?? 'all_dates') . '.pdf'
         );
     }
 

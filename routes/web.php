@@ -14,6 +14,7 @@ use App\Http\Controllers\GradeLController;
 use App\Http\Controllers\GradeSController;
 use App\Http\Controllers\GradeHController;
 use App\Http\Controllers\PackingController;
+use App\Http\Controllers\PackingReportController;
 use App\Http\Controllers\PenerimaanIkanController;
 use App\Http\Controllers\PenerimaanIkanReportController;
 use App\Http\Controllers\ServiceController;
@@ -88,6 +89,10 @@ Route::middleware('is_admin')->group(function () {
         Route::get('/penerimaan-ikan', PenerimaanIkanReportController::class)->name('penerimaan_ikan.index');
         Route::post('/penerimaan-ikan', [PenerimaanIkanReportController::class, 'print'])
             ->name('penerimaan_ikan.print');
+
+        Route::get('/packing', PackingReportController::class)->name('packing.index');
+        Route::post('/packing', [PackingReportController::class, 'print'])
+            ->name('packing.print');
     });
 });
 

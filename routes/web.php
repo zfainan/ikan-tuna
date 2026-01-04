@@ -95,9 +95,9 @@ Route::middleware('is_admin')->group(function () {
         Route::post('/stock', [StockReportController::class, 'print'])
             ->name('stock.print');
 
-        Route::get('/stock', StockReportController::class)->name('stock.index');
-        Route::post('/stock', [StockReportController::class, 'print'])
-            ->name('stock.print');
+        Route::get('/packing', PackingReportController::class)->name('packing.index');
+        Route::post('/packing', [PackingReportController::class, 'print'])
+            ->name('packing.print');
     });
 });
 

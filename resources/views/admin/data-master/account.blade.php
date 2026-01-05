@@ -39,7 +39,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->name }}</td>
                                         <td>{{ $item->email }}</td>
-                                        <td>{{ $item->role_id == 1 ? 'Pimpinan' : ($item->role_id == 2 ? 'Admin' : ($item->role_id == 3 ? 'Kepala Produksi Cutting' : ($item->role_id == 4 ? 'Kepala Produksi Service' : 'Kepala Produksi Packing'))) }}</td>
+                                        <td>{{ $item->role_id == 1 ? 'Pimpinan' : ($item->role_id == 2 ? 'Admin' : ($item->role_id == 3 ? 'Tally Cutting' : ($item->role_id == 4 ? 'Tally Service' : 'Tally Packing'))) }}</td>
                                         <td class="text-center">
                                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" 
                                                 data-bs-target="#editAkunModal{{ $item->id }}">
@@ -153,9 +153,9 @@
                         <div class="mb-3">
                             <label for="role_id" class="form-label">Jabatan</label>
                             <select name="role_id" class="form-select" required>
-                                <option value="3">Kepala Produksi Cutting</option>
-                                <option value="4">Kepala Produksi Service</option>
-                                <option value="5">Kepala Produksi Packing</option>
+                                <option value="3">Tally Cutting</option>
+                                <option value="4">Tally Service</option>
+                                <option value="5">Tally Packing</option>
                             </select>
                         </div>
                         <div class="d-flex justify-content-end">

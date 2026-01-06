@@ -120,7 +120,7 @@
                                 <div><strong>Tanggal Service:</strong>
                                     {{ \Carbon\Carbon::parse($session_tgl_service)->format('d F Y') }}</div>
                                 <div><strong>Tanggal Penerimaan:</strong>
-                                    {{ \Carbon\Carbon::parse($selectedPenerimaan->tgl_penerimaan)->format('d F Y') }}
+                                    {{ \Carbon\Carbon::parse($selectedPenerimaan?->tgl_penerimaan)->format('d F Y') }}
                                 </div>
                             </div>
                             <div class="col-4 text-start">

@@ -6,6 +6,7 @@ use App\Models\PenerimaanIkan;
 use App\Models\KategoriProduk;
 use App\Models\CuttingL;
 use App\Models\ServiceL;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -267,5 +268,38 @@ class ServiceByL extends Component
             'filteredPenerimaan' => $this->filteredPenerimaan,
             'cutting_ikan' => $this->cutting_ikan,
         ]);
+    }
+
+    public function print()
+    {
+        $penerimaan = PenerimaanIkan::find($this->penerimaan_id);
+
+        $pdf = Pdf::loadView(
+            'pdf.service_by_l',
+            [
+                'tgl_service' => $this->session_tgl_service,
+                'tgl_penerimaan' => $penerimaan?->tgl_penerimaan ?? 'N/A',
+                'supplier' => $penerimaan?->supplier?->nama_supplier ?? 'N/A',
+                'selected_kategori' => [
+                    $this->selectedKategori1,
+                    $this->selectedKategori2,
+                    $this->selectedKategori3,
+                    $this->selectedKategori4,
+                    $this->selectedKategori5,
+                    $this->selectedKategori6,
+                    $this->selectedKategori7,
+                ],
+                'kategori_produk' => $this->kategori_produk,
+                'data' => $this->rows,
+                'total_berat' => $this->total_berat,
+                'total_pcs' => $this->total_pcs,
+            ]
+        );
+        $pdf->setPaper('A4', 'landscape');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'cutting_by_p_' . now()->format('Ymd_His') . '.pdf'
+        );
     }
 }

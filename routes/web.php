@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CuttingController;
 use App\Http\Controllers\CuttingLController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceLController;
 use App\Http\Controllers\KategoriByprodukCtController;
 use App\Http\Controllers\KategoriProdukController;
@@ -69,9 +70,7 @@ Route::resource('stock', StockController::class)->only(['index']);
 
 //MIDDLEWARE ADMIN
 Route::middleware('is_admin')->group(function () {
-    Route::get('/admin', function () {
-        return view('admin.dashboard');
-    });
+    Route::get('/admin', DashboardController::class);
 
     //Resource admin
     Route::resource('akun', AccountController::class);
@@ -104,9 +103,7 @@ Route::middleware('is_admin')->group(function () {
 
 //MIDDLEWARE KARYAWAN
 Route::middleware('is_karyawan')->group(function () {
-    Route::get('/karyawan', function () {
-        return view('karyawan.dashboard');
-    });
+    Route::get('/karyawan', DashboardController::class);
 });
 
 //GET LAPORAN

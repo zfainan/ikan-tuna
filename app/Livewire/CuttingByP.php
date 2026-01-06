@@ -190,9 +190,6 @@ class CuttingByP extends Component
 
             // Jika tidak ada data, tambahkan baris kosong
             if (empty($this->rows)) {
-                for ($i = 1; $i <= 7; $i++) {
-                    $this->selectedKategoriByproduk[$i] = null;
-                }
                 $this->addRow();
             }
 

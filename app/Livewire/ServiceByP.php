@@ -223,9 +223,9 @@ class ServiceByP extends Component
             // Ambil data dan urutkan berdasarkan no_batch dan kategori
             $services = $query->orderBy('no_batch')
                 ->orderBy('kategori_byproduk_id')
-                ->whereIn('kategori_byproduk_id', array_values(
-                    array_filter($this->selectedKategoriByproduk)
-                ))
+                // ->whereIn('kategori_byproduk_id', array_values(
+                //     array_filter($this->selectedKategoriByproduk)
+                // ))
                 ->get();
 
             // Kelompokkan data berdasarkan no_batch
@@ -801,7 +801,7 @@ class ServiceByP extends Component
     public function updatedPenerimaanId($value)
     {
         if ($this->session_tgl_service && $this->session_tgl_injek_co && $this->penerimaan_id) {
-            $this->loadData();
+            $this->reloadRowsWithkategoriData();
         } else {
             $this->reset(['rows']);
             $this->addRow();

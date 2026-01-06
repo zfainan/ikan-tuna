@@ -177,14 +177,17 @@
                     <div class="mb-6">
                         <strong>Tanggal Service</strong>: {{ $tgl_service }}
                     </div>
-                </td>
-                <td class="w-50 align-center text-left">
+                    <div class="mb-6">
+                        <strong>Tanggal Penerimaan</strong>: {{ $tgl_penerimaan }}
+                    </div>
                     <div class="mb-6">
                         <strong>Jenis Penerimaan</strong>: {{ $jenis_penerimaan }}
                     </div>
                     <div class="mb-6">
                         <strong>Supplier</strong>: {{ $supplier }}
                     </div>
+                </td>
+                <td class="w-50 align-center text-left">
                 </td>
             </tr>
         </table>
@@ -287,7 +290,6 @@
                         @for ($i = 0; $i < 3; $i++)
                             <td>{{ number_format($berat_hs[$i], 2) }}</td>
                         @endfor
-                        <td></td>
                     </tr>
 
                     <tr>

@@ -441,6 +441,7 @@ class CuttingByL extends Component
                 'tgl_cutting' => $this->session_tggl_cutting,
                 'tgl_injek_co' => $this->session_tggl_injek_co,
                 'tgl_service' => $this->session_tggl_service,
+                'tgl_penerimaan' => $penerimaan?->tgl_penerimaan ?? 'N/A',
                 'jenis_penerimaan' => $penerimaan?->jenis_penerimaan ?? 'N/A',
                 'supplier' => $penerimaan?->supplier?->nama_supplier ?? 'N/A',
                 'no_batch' => $this->noBatch,

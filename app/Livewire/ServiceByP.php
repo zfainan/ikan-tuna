@@ -6,6 +6,7 @@ use App\Models\Cutting;
 use App\Models\PenerimaanIkan;
 use App\Models\KategoriByprodukCt;
 use App\Models\Service;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -822,5 +823,28 @@ class ServiceByP extends Component
     {
         $this->reset(['session_tgl_injek_co', 'selectedTanggalPenerimaan', 'penerimaan_id', 'rows']);
         $this->addRow();
+    }
+
+    public function print()
+    {
+        $pdf = Pdf::loadView(
+            'pdf.service_by_p',
+            [
+                'tgl_service' => $this->session_tgl_service,
+                'tgl_injek_co' => $this->session_tgl_injek_co,
+                'jenis_penerimaan' => PenerimaanIkan::find($this->penerimaan_id)->jenis_penerimaan ?? 'N/A',
+                'selectedKategoriByproduk' => $this->selectedKategoriByproduk,
+                'data' => $this->rows,
+                'kategori_byproduk_ct' => $this->kategori_byproduk_ct,
+                'total_berat' => $this->total_berat,
+                'total_pcs' => $this->total_pcs,
+            ]
+        );
+        $pdf->setPaper('A4', 'landscape');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'cutting_by_p_' . now()->format('Ymd_His') . '.pdf'
+        );
     }
 }

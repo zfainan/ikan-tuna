@@ -64,6 +64,9 @@ Route::resource('kategori-produk', KategoriProdukController::class)
     ->parameters(['kategori-produk' => 'kategori_produk_id'])
     ->middleware('auth');
 
+Route::resource('packings', PackingController::class)->only(['index']);
+Route::resource('stock', StockController::class)->only(['index']);
+
 //MIDDLEWARE ADMIN
 Route::middleware('is_admin')->group(function () {
     Route::get('/admin', function () {
@@ -83,8 +86,6 @@ Route::middleware('is_admin')->group(function () {
         ->parameters(['kategori-byproduk-ct' => 'kategori_byproduk_id']);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('penerimaan_ikan', PenerimaanIkanController::class);
-    Route::resource('packings', PackingController::class)->only(['index']);
-    Route::resource('stock', StockController::class)->only(['index']);
 
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/penerimaan-ikan', PenerimaanIkanReportController::class)->name('penerimaan_ikan.index');

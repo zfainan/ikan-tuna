@@ -171,12 +171,17 @@
                     <div class="mb-6">
                         <strong>Tanggal Cutting</strong>: {{ $tgl_cutting }}
                     </div>
-                    <div class="mb-6"><strong>Tanggal Injek CO</strong>: {{ $tgl_injek_co }}</div>
-                </td>
-                <td class="w-50 align-center text-left">
+                    <div class="mb-6">
+                        <strong>Tanggal Injek CO</strong>: {{ $tgl_injek_co }}
+                    </div>
+                    <div class="mb-6">
+                        <strong>Tanggal Penerimaan</strong>: {{ $tgl_penerimaan }}
+                    </div>
                     <div class="mb-6">
                         <strong>Jenis Penerimaan</strong>: {{ $jenis_penerimaan }}
                     </div>
+                </td>
+                <td class="w-50 align-center text-left">
                 </td>
             </tr>
         </table>

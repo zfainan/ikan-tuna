@@ -679,12 +679,14 @@ class CuttingByP extends Component
 
     public function print()
     {
+        $penerimaan = PenerimaanIkan::find($this->penerimaan_id);
         $pdf = Pdf::loadView(
             'pdf.cutting_by_p',
             [
                 'tgl_cutting' => $this->session_tgl_cutting,
                 'tgl_injek_co' => $this->session_tgl_injek_co,
-                'jenis_penerimaan' => PenerimaanIkan::find($this->penerimaan_id)->jenis_penerimaan ?? 'N/A',
+                'tgl_penerimaan' => $penerimaan?->tgl_penerimaan ?? 'N/A',
+                'jenis_penerimaan' => $penerimaan?->jenis_penerimaan ?? 'N/A',
                 'selectedKategoriByproduk' => $this->selectedKategoriByproduk,
                 'data' => $this->rows,
                 'kategori_byproduk_ct' => $this->kategori_byproduk_ct,

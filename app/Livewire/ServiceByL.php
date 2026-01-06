@@ -277,6 +277,7 @@ class ServiceByL extends Component
         $pdf = Pdf::loadView(
             'pdf.service_by_l',
             [
+                'tgl_cutting' => CuttingL::find($this->selectedCuttingByl)?->tggl_cutting ?? 'N/A',
                 'tgl_service' => $this->session_tgl_service,
                 'tgl_penerimaan' => $penerimaan?->tgl_penerimaan ?? 'N/A',
                 'supplier' => $penerimaan?->supplier?->nama_supplier ?? 'N/A',

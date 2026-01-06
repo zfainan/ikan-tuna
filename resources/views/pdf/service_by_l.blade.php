@@ -172,11 +172,14 @@
                     <div class="mb-6">
                         <strong>Tanggal Penerimaan</strong>: {{ $tgl_penerimaan }}
                     </div>
-                </td>
-                <td class="w-50 align-center text-left">
+                    <div class="mb-6">
+                        <strong>Tanggal Cutting</strong>: {{ $tgl_cutting }}
+                    </div>
                     <div class="mb-6">
                         <strong>Supplier</strong>: {{ $supplier }}
                     </div>
+                </td>
+                <td class="w-50 align-center text-left">
                 </td>
             </tr>
         </table>

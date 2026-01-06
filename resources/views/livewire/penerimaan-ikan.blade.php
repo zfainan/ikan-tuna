@@ -334,13 +334,6 @@
                     <span class="spinner-border spinner-border-sm" role="status"></span> 
                     Menyimpan...</span>
         </button>
-
-        <button type="button" 
-                class="btn btn-secondary btn-sm py-0 px-2" 
-                    wire:click="print"
-                    style="font-size: 0.7rem; height: 30px;">
-                <i class="bi bi-printer"></i> Print
-        </button>
     </div>
 
 

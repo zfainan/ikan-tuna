@@ -318,11 +318,6 @@
             </span>
         </button>
 
-        <button type="button" class="btn btn-secondary btn-sm px-2 py-0" wire:click="print"
-            style="font-size: 0.7rem; height: 30px;">
-            <i class="bi bi-printer"></i> Print
-        </button>
-
         {{-- ALERT PESAN --}}
         @if (session()->has('message'))
             <div class="alert alert-success mt-3">

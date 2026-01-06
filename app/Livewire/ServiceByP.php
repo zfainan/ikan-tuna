@@ -154,7 +154,7 @@ class ServiceByP extends Component
             // Format data sesuai yang diharapkan view
             $formattedRows = [];
 
-            foreach ($groupedData as $batch) {
+            foreach ($groupedData as $rowIdx => $batch) {
                 $row = [
                     'no_batch' => $batch['no_batch'],
                     'tgl_service' => $batch['tgl_service'],
@@ -188,9 +188,6 @@ class ServiceByP extends Component
 
             // Jika tidak ada data, tambahkan baris kosong
             if (empty($this->rows)) {
-                for ($i = 1; $i <= 7; $i++) {
-                    $this->selectedKategoriByproduk[$i] = null;
-                }
                 $this->addRow();
             }
 
@@ -494,7 +491,7 @@ class ServiceByP extends Component
             DB::commit();
 
             session()->flash('message', 'Data berhasil disimpan');
-            $this->loadData();
+            $this->reloadRowsWithkategoriData();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saat menyimpan data service: ' . $e->getMessage());
@@ -846,7 +843,7 @@ class ServiceByP extends Component
         $pdf->setPaper('A4', 'landscape');
 
         return response()->streamDownload(
-            fn () => print($pdf->output()),
+            fn() => print($pdf->output()),
             'cutting_by_p_' . now()->format('Ymd_His') . '.pdf'
         );
     }

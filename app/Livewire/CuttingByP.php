@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Cutting;
 use App\Models\PenerimaanIkan;
 use App\Models\KategoriByprodukCt;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -117,9 +118,9 @@ class CuttingByP extends Component
             }
 
             if ($withKategoriData) {
-               $query->whereIn('kategori_byproduk_id', array_values(
+                $query->whereIn('kategori_byproduk_id', array_values(
                     array_filter($this->selectedKategoriByproduk)
-               ));
+                ));
             }
 
             // Ambil data dan urutkan berdasarkan no_batch dan kategori
@@ -674,5 +675,28 @@ class CuttingByP extends Component
     {
         $this->reset(['session_tgl_injek_co', 'selectedTanggalPenerimaan', 'penerimaan_id', 'rows']);
         $this->addRow();
+    }
+
+    public function print()
+    {
+        $pdf = Pdf::loadView(
+            'pdf.cutting_by_p',
+            [
+                'tgl_cutting' => $this->session_tgl_cutting,
+                'tgl_injek_co' => $this->session_tgl_injek_co,
+                'jenis_penerimaan' => PenerimaanIkan::find($this->penerimaan_id)->jenis_penerimaan ?? 'N/A',
+                'selectedKategoriByproduk' => $this->selectedKategoriByproduk,
+                'data' => $this->rows,
+                'kategori_byproduk_ct' => $this->kategori_byproduk_ct,
+                'total_berat' => $this->total_berat,
+                'total_pcs' => $this->total_pcs,
+            ]
+        );
+        $pdf->setPaper('A4', 'landscape');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'cutting_by_p_' . now()->format('Ymd_His') . '.pdf'
+        );
     }
 }

@@ -31,7 +31,7 @@
     
     
     @livewireScripts
-    <script src="{{ asset('assets/static/js/initTheme.js') }}"></script>
+    <script src="/dist/assets/static/js/initTheme.js"></script>
     @stack('js')
 </body>
 </html>

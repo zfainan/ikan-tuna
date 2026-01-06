@@ -7,7 +7,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h3>PT BAHARI PRIMA MANUNGGAL</h3>
-                        <p class="text-subtitle text-muted">Data Akun</p>
+                        <p class="text-subtitle text-muted">Data Account Karyawan</p>
                     </div>
                 </div>
             </div>
@@ -15,9 +15,9 @@
             <section class="section">
                 <div class="card" style="border-radius: 10px; overflow: hidden;">
                     <div class="card-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                        <h4 class="card-title text-white">Daftar Akun</h4>
+                        <h4 class="card-title text-white">Daftar Account</h4>
                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#tambahAkunModal">
-                            <i class="bi bi-plus-circle"></i> Tambah Akun
+                            <i class="bi bi-plus-circle"></i> Tambah
                         </button>
                     </div>
                     
@@ -58,7 +58,7 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
-                                                    <h5 class="modal-title text-white" id="editAkunModalLabel{{ $item->id }}">Edit Akun</h5>
+                                                    <h5 class="modal-title text-white" id="editAkunModalLabel{{ $item->id }}">Edit</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
@@ -96,7 +96,7 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                                    <h5 class="modal-title text-white" id="hapusAkunModalLabel{{ $item->id }}">Hapus Akun</h5>
+                                                    <h5 class="modal-title text-white" id="hapusAkunModalLabel{{ $item->id }}">Hapus</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
@@ -129,7 +129,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                    <h5 class="modal-title text-white" id="tambahAkunModalTitle">Tambah Akun</h5>
+                    <h5 class="modal-title text-white" id="tambahAkunModalTitle">Tambah Account</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

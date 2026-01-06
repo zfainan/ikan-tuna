@@ -15,7 +15,7 @@
             <section class="section">
                 <div class="card" style="border-radius: 10px; overflow: hidden;">
                     <div class="card-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                        <h4 class="card-title text-white"> Grading RM Service</h4>
+                        <h4 class="card-title text-white"> Grade RM Service</h4>
                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#tambahGradeServiceModal">
                             <i class="bi bi-plus-circle"></i> Tambah
                         </button>
@@ -67,7 +67,7 @@
                                                         @method('PUT')
                                                         <div class="modal-body">
                                                             <div class="mb-3">
-                                                                <label for="grade_service_edit{{ $gradeService->grade_service_id }}" class="form-label">Grade Service</label>
+                                                                <label for="grade_service_edit{{ $gradeService->grade_service_id }}" class="form-label">Grade RM</label>
                                                                 <input type="text" class="form-control" id="grade_service_edit{{ $gradeService->grade_service_id }}" 
                                                                     name="grading" value="{{ $gradeService->grading }}" required>
                                                             </div>
@@ -97,14 +97,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                    <h5 class="modal-title text-white" id="tambahGradeServiceModalLabel">Tambah Grading</h5>
+                    <h5 class="modal-title text-white" id="tambahGradeServiceModalLabel">Tambah Grade RM</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('grade_service.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="grading" class="form-label">Grade Service</label>
+                            <label for="grading" class="form-label">Grade RM</label>
                             <input type="text" class="form-control" id="grading" 
                                 name="grading" required>
                         </div>

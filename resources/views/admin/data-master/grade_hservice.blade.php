@@ -7,7 +7,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h3>PT BAHARI PRIMA MANUNGGAL</h3>
-                        <p class="text-subtitle text-muted">Data Grade Hasil Service</p>
+                        <p class="text-subtitle text-muted">Data Grade/Sizing HasilService</p>
                     </div>
                 </div>
             </div>
@@ -15,7 +15,7 @@
             <section class="section">
                 <div class="card" style="border-radius: 10px; overflow: hidden;">
                     <div class="card-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                        <h4 class="card-title text-white mb-0">Grading Hasil Service</h4>
+                        <h4 class="card-title text-white mb-0">Grade/Sizing Hasil Service</h4>
                         <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" 
                                 data-bs-target="#tambahGradeHServiceModal">
                             <i class="bi bi-plus-circle"></i> Tambah
@@ -67,7 +67,7 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="mb-3">
-                                                            <label for="grade_servicehs" class="form-label">Grade Hasil Service</label>
+                                                            <label for="grade_servicehs" class="form-label">Grade/Sizing Hasil Service</label>
                                                             <input type="text" class="form-control" id="grade_servicehs" 
                                                                 name="grade_servicehs" value="{{ $gradeHService->grade_servicehs }}" required>
                                                         </div>
@@ -96,14 +96,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                    <h5 class="modal-title text-white" id="tambahGradeHServiceModalLabel">Tambah Grade Hasil Service</h5>
+                    <h5 class="modal-title text-white" id="tambahGradeHServiceModalLabel">Tambah Grade/Sizing Hasil Service</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form action="{{ route('grade_hservice.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="grade_servicehs" class="form-label">Grade Hasil Service</label>
+                            <label for="grade_servicehs" class="form-label">Grade/Sizing Hasil Service</label>
                             <input type="text" class="form-control" id="grade_servicehs" 
                                    name="grade_servicehs" required>
                         </div>

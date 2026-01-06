@@ -10,6 +10,7 @@ use App\Models\PenerimaanIkan;
 use App\Models\GradeL;
 use App\Models\GradeService;
 use App\Models\GradeHService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CuttingByL extends Component
 {
@@ -398,13 +399,13 @@ class CuttingByL extends Component
                     'berat_loin' => $row['berat_loin'],
                     'suhu_loin' => $row['suhu_loin'],
 
-                    'rm_berat_1' => $row['rm_berat_1'],
-                    'rm_berat_2' => $row['rm_berat_2'],
-                    'rm_berat_3' => $row['rm_berat_3'],
+                    'rm_berat_1' => $row['rm_berat_1'] ?? 0,
+                    'rm_berat_2' => $row['rm_berat_2'] ?? 0,
+                    'rm_berat_3' => $row['rm_berat_3'] ?? 0,
 
-                    'hs_berat_1' => $row['hs_berat_1'],
-                    'hs_berat_2' => $row['hs_berat_2'],
-                    'hs_berat_3' => $row['hs_berat_3'],
+                    'hs_berat_1' => $row['hs_berat_1'] ?? 0,
+                    'hs_berat_2' => $row['hs_berat_2'] ?? 0,
+                    'hs_berat_3' => $row['hs_berat_3'] ?? 0,
                 ]);
             }
 
@@ -429,5 +430,45 @@ class CuttingByL extends Component
             'gradingService' => $this->gradingService,
             'gradingHservice' => $this->gradingHservice,
         ]);
+    }
+
+    public function print()
+    {
+        $penerimaan = PenerimaanIkan::find($this->penerimaan_id);
+        $pdf = Pdf::loadView(
+            'pdf.cutting_by_l',
+            [
+                'tgl_cutting' => $this->session_tggl_cutting,
+                'tgl_injek_co' => $this->session_tggl_injek_co,
+                'tgl_service' => $this->session_tggl_service,
+                'jenis_penerimaan' => $penerimaan?->jenis_penerimaan ?? 'N/A',
+                'supplier' => $penerimaan?->supplier?->nama_supplier ?? 'N/A',
+                'no_batch' => $this->noBatch,
+                'selected_sizing_loin' => GradeL::find($this->selectedSizingLoin)?->grade_sizing ?? 'N/A',
+                'grading_services' => [
+                    GradeService::find($this->selectedGradingService1)?->grading ?? 'N/A',
+                    GradeService::find($this->selectedGradingService2)?->grading ?? 'N/A',
+                    GradeService::find($this->selectedGradingService3)?->grading ?? 'N/A',
+                ],
+                'grading_h_services' => [
+                    GradeHService::find($this->selectedGradingHService1)?->grade_servicehs ?? 'N/A',
+                    GradeHService::find($this->selectedGradingHService2)?->grade_servicehs ?? 'N/A',
+                    GradeHService::find($this->selectedGradingHService3)?->grade_servicehs ?? 'N/A',
+                ],
+                'data' => $this->rows,
+                'berat_loin' => $this->berat_loin,
+                'berat_rm' => $this->berat_rm,
+                'berat_hs' => $this->berat_hs,
+                'pcs_loin' => $this->pcs_loin,
+                'pcs_rm' => $this->pcs_rm,
+                'pcs_hs' => $this->pcs_hs,
+            ]
+        );
+        $pdf->setPaper('A4', 'landscape');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'cutting_by_l_' . now()->format('Ymd_His') . '.pdf'
+        );
     }
 }

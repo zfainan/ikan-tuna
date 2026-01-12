@@ -68,6 +68,20 @@ Route::resource('kategori-produk', KategoriProdukController::class)
 Route::resource('packings', PackingController::class)->only(['index']);
 Route::resource('stock', StockController::class)->only(['index']);
 
+Route::prefix('reports')->name('reports.')->group(function () {
+    Route::get('/penerimaan-ikan', PenerimaanIkanReportController::class)->name('penerimaan_ikan.index');
+    Route::post('/penerimaan-ikan', [PenerimaanIkanReportController::class, 'print'])
+        ->name('penerimaan_ikan.print');
+
+    Route::get('/stock', StockReportController::class)->name('stock.index');
+    Route::post('/stock', [StockReportController::class, 'print'])
+        ->name('stock.print');
+
+    Route::get('/packing', PackingReportController::class)->name('packing.index');
+    Route::post('/packing', [PackingReportController::class, 'print'])
+        ->name('packing.print');
+});
+
 //MIDDLEWARE ADMIN
 Route::middleware('is_admin')->group(function () {
     Route::get('/admin', DashboardController::class);
@@ -85,20 +99,6 @@ Route::middleware('is_admin')->group(function () {
         ->parameters(['kategori-byproduk-ct' => 'kategori_byproduk_id']);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('penerimaan_ikan', PenerimaanIkanController::class);
-
-    Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('/penerimaan-ikan', PenerimaanIkanReportController::class)->name('penerimaan_ikan.index');
-        Route::post('/penerimaan-ikan', [PenerimaanIkanReportController::class, 'print'])
-            ->name('penerimaan_ikan.print');
-
-        Route::get('/stock', StockReportController::class)->name('stock.index');
-        Route::post('/stock', [StockReportController::class, 'print'])
-            ->name('stock.print');
-
-        Route::get('/packing', PackingReportController::class)->name('packing.index');
-        Route::post('/packing', [PackingReportController::class, 'print'])
-            ->name('packing.print');
-    });
 });
 
 //MIDDLEWARE KARYAWAN
